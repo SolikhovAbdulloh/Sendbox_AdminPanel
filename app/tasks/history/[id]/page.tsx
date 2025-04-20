@@ -94,8 +94,8 @@ const taskDetails = {
 
 export default function TaskDetailsPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const taskId = params.id
-
+  const taskId = params?.id
+  
   return (
     <DashboardLayout>
       <div className="mb-4 flex items-center justify-between">

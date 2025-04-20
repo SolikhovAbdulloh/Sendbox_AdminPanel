@@ -1,220 +1,175 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { CalendarIcon, Eye, Filter, Search, X } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Link from "next/link"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { DataTablePagination } from "@/components/data-table-pagination"
-
-// Sample data for task history with added task type and incident type
-const taskHistory = [
-  {
-    id: "TASK-0995",
-    fileName: "report.docx",
-    sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    fileTime: "2023-04-10 09:32:10",
-    createdTime: "2023-04-10 09:35:22",
-    fileSize: "1.8 MB",
-    status: "Completed",
-    type: "File",
-    incidentType: "Malware",
-    date: new Date("2023-04-10"),
-  },
-  {
-    id: "TASK-0996",
-    fileName: "malware_sample.bin",
-    sha256: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
-    fileTime: "2023-04-11 11:10:45",
-    createdTime: "2023-04-11 11:12:30",
-    fileSize: "3.2 MB",
-    status: "Failed",
-    type: "File",
-    incidentType: "Ransomware",
-    date: new Date("2023-04-11"),
-  },
-  {
-    id: "TASK-0997",
-    fileName: "system.dll",
-    sha256: "1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u2v3w4x5y6z7a8b9c0d1e2f",
-    fileTime: "2023-04-12 14:05:12",
-    createdTime: "2023-04-12 14:10:00",
-    fileSize: "0.7 MB",
-    status: "Completed",
-    type: "File",
-    incidentType: "Malware",
-    date: new Date("2023-04-12"),
-  },
-  {
-    id: "TASK-0998",
-    fileName: "setup.exe",
-    sha256: "2a3b4c5d6e7f8g9h0i1j2k3l4m5n6o7p8q9r0s1t2u3v4w5x6y7z8a9b0c1d2e3f",
-    fileTime: "2023-04-13 16:22:33",
-    createdTime: "2023-04-13 16:25:10",
-    fileSize: "4.5 MB",
-    status: "Completed",
-    type: "File",
-    incidentType: "None",
-    date: new Date("2023-04-13"),
-  },
-  {
-    id: "TASK-0999",
-    fileName: "trojan.js",
-    sha256: "3a4b5c6d7e8f9g0h1i2j3k4l5m6n7o8p9q0r1s2t3u4v5w6x7y8z9a0b1c2d3e4f",
-    fileTime: "2023-04-14 18:15:40",
-    createdTime: "2023-04-14 18:20:05",
-    fileSize: "0.3 MB",
-    status: "Failed",
-    type: "File",
-    incidentType: "Malware",
-    date: new Date("2023-04-14"),
-  },
-  {
-    id: "TASK-1000",
-    fileName: "https://phishing-site.com",
-    sha256: "4a5b6c7d8e9f0g1h2i3j4k5l6m7n8o9p0q1r2s3t4u5v6w7x8y9z0a1b2c3d4e5f",
-    fileTime: "2023-04-15 10:25:30",
-    createdTime: "2023-04-15 10:30:45",
-    fileSize: "N/A",
-    status: "Completed",
-    type: "URL",
-    incidentType: "Phishing",
-    date: new Date("2023-04-15"),
-  },
-  {
-    id: "TASK-1001",
-    fileName: "https://suspicious-domain.net/login.php",
-    sha256: "5a6b7c8d9e0f1g2h3i4j5k6l7m8n9o0p1q2r3s4t5u6v7w8x9y0z1a2b3c4d5e6f",
-    fileTime: "2023-04-16 14:15:20",
-    createdTime: "2023-04-16 14:20:35",
-    fileSize: "N/A",
-    status: "Completed",
-    type: "URL",
-    incidentType: "Phishing",
-    date: new Date("2023-04-16"),
-  },
-  // Add more sample data to demonstrate pagination
-  ...Array.from({ length: 30 }, (_, i) => ({
-    id: `TASK-${900 + i}`,
-    fileName: `history_file_${i + 1}.exe`,
-    sha256: `history_hash_${i + 1}_e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`,
-    fileTime: `2023-03-${(i % 30) + 1} 10:00:00`,
-    createdTime: `2023-03-${(i % 30) + 1} 10:05:00`,
-    fileSize: "1.0 MB",
-    status: i % 2 === 0 ? "Completed" : "Failed",
-    type: i % 2 === 0 ? "File" : "URL",
-    incidentType: i % 4 === 0 ? "Malware" : i % 4 === 1 ? "Ransomware" : i % 4 === 2 ? "Phishing" : "None",
-    date: new Date(`2023-03-${(i % 30) + 1}`),
-  })),
-]
+import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { CalendarIcon, Eye, Filter, Search, X } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Link from "next/link";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { useQueryApi } from "@/share/hook/useQuery";
+import { useLanguage } from "@/contexts/language-context";
 
 // Filter options
-const taskTypes = ["All", "File", "URL"]
-const incidentTypes = ["All", "None", "Malware", "Ransomware", "Phishing"]
-const statusTypes = ["All", "Completed", "Failed"]
+const taskTypes = ["All", "File", "URL"];
+const incidentTypes = ["All", "None", "Malware", "Ransomware", "Phishing"];
+const statusTypes = ["All", "Completed", "Failed"];
 
 export default function TaskHistoryPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [typeFilter, setTypeFilter] = useState("All")
-  const [incidentFilter, setIncidentFilter] = useState("All")
-  const [statusFilter, setStatusFilter] = useState("All")
-  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined)
-  const [dateTo, setDateTo] = useState<Date | undefined>(undefined)
-  const [showFilters, setShowFilters] = useState(false)
+  const { t } = useLanguage();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All");
+  const [incidentFilter, setIncidentFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+  const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  // Format dates for API query
+  const formatDateForApi = (date?: Date) =>
+    date ? format(date, "yyyy-MM-dd") : "";
 
-  const filteredTasks = taskHistory.filter((task) => {
-    // Text search filter
+  // Construct API query URL with dynamic filters and pagination (no search parameter)
+  const { data, isLoading, isError } = useQueryApi({
+    url: `/1/cape/tasks/list/history?page=${currentPage}&limit=${pageSize}&status=${
+      statusFilter === "All" ? "all" : statusFilter.toLowerCase()
+    }&category=${
+      typeFilter === "All" ? "all" : typeFilter.toLowerCase()
+    }&incidentType=${
+      incidentFilter === "All" ? "all" : incidentFilter.toLowerCase()
+    }${dateFrom ? `&startedAt=${formatDateForApi(dateFrom)}` : ""}${
+      dateTo ? `&completedAt=${formatDateForApi(dateTo)}` : ""
+    }`,
+    pathname: "history",
+  });
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("tasks.historyTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-10">{t("common.loading")}</div>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
+  }
+
+  // Handle error state
+  if (isError || !data) {
+    return (
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("tasks.historyTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-10 text-red-500">
+              {t("common.errorLoadingData")}
+            </div>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
+  }
+
+  // Extract tasks and pagination metadata from API response
+  const tasks = data || [];
+  const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch =
-      task.fileName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.sha256.toLowerCase().includes(searchTerm.toLowerCase())
+      task.filename?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.sha256?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+  const totalItems = filteredTasks.length; // Use filteredTasks.length for client-side filtering
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-    // Type filter
-    const matchesType = typeFilter === "All" || task.type === typeFilter
-
-    // Incident filter
-    const matchesIncident = incidentFilter === "All" || task.incidentType === incidentFilter
-
-    // Status filter
-    const matchesStatus = statusFilter === "All" || task.status === statusFilter
-
-    // Date range filter
-    const matchesDateFrom = !dateFrom || task.date >= dateFrom
-    const matchesDateTo = !dateTo || task.date <= dateTo
-
-    return matchesSearch && matchesType && matchesIncident && matchesStatus && matchesDateFrom && matchesDateTo
-  })
-
-  // Calculate pagination
-  const totalItems = filteredTasks.length
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
-
-  // Ensure current page is valid after filtering or changing page size
-  const validCurrentPage = Math.min(currentPage, totalPages)
+  // Ensure current page is valid
+  const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
-    setCurrentPage(validCurrentPage)
+    setCurrentPage(validCurrentPage);
   }
 
   // Get current page items
-  const startIndex = (validCurrentPage - 1) * pageSize
-  const endIndex = Math.min(startIndex + pageSize, totalItems)
-  const currentItems = filteredTasks.slice(startIndex, endIndex)
+  const startIndex = (validCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const currentItems = filteredTasks.slice(startIndex, endIndex);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed":
-        return "bg-green-500"
+        return "bg-green-500";
       case "Failed":
-        return "bg-red-500"
+        return "bg-red-500";
       default:
-        return "bg-gray-500"
+        return "bg-gray-500";
     }
-  }
+  };
 
   const getIncidentColor = (incidentType: string) => {
     switch (incidentType) {
       case "Malware":
-        return "bg-orange-500"
+        return "bg-orange-500";
       case "Ransomware":
-        return "bg-red-500"
+        return "bg-red-500";
       case "Phishing":
-        return "bg-blue-500"
+        return "bg-blue-500";
       case "None":
-        return "bg-gray-500"
+        return "bg-gray-500";
       default:
-        return "bg-gray-500"
+        return "bg-gray-500";
     }
-  }
+  };
 
   const resetFilters = () => {
-    setTypeFilter("All")
-    setIncidentFilter("All")
-    setStatusFilter("All")
-    setDateFrom(undefined)
-    setDateTo(undefined)
-    setCurrentPage(1) // Reset to first page when filters change
-  }
+    setTypeFilter("All");
+    setIncidentFilter("All");
+    setStatusFilter("All");
+    setDateFrom(undefined);
+    setDateTo(undefined);
+    setSearchTerm("");
+    setCurrentPage(1);
+  };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
 
   const handlePageSizeChange = (size: number) => {
-    setPageSize(size)
-    setCurrentPage(1) // Reset to first page when page size changes
-  }
+    setPageSize(size);
+    setCurrentPage(1);
+  };
 
   const activeFilterCount = [
     typeFilter !== "All",
@@ -222,31 +177,37 @@ export default function TaskHistoryPage() {
     statusFilter !== "All",
     !!dateFrom,
     !!dateTo,
-  ].filter(Boolean).length
+    !!searchTerm,
+  ].filter(Boolean).length;
 
   return (
     <DashboardLayout>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Task History</CardTitle>
+          <CardTitle>{t("tasks.historyTitle")}</CardTitle>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search tasks..."
+                placeholder={t("tasks.searchPlaceholder")}
                 className="w-64 pl-8"
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setCurrentPage(1) // Reset to first page when search changes
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
                 }}
               />
             </div>
-            <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter className="mr-2 h-4 w-4" />
-              Filters
-              {activeFilterCount > 0 && <Badge className="ml-2 bg-primary">{activeFilterCount}</Badge>}
+              {t("common.filters")}
+              {activeFilterCount > 0 && (
+                <Badge className="ml-2 bg-primary">{activeFilterCount}</Badge>
+              )}
             </Button>
           </div>
         </CardHeader>
@@ -254,63 +215,69 @@ export default function TaskHistoryPage() {
           <div className="px-6 py-3 border-b">
             <div className="flex flex-wrap items-center gap-4 mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Type:</span>
+                <span className="text-sm font-medium">{t("tasks.type")}:</span>
                 <Select
                   value={typeFilter}
                   onValueChange={(value) => {
-                    setTypeFilter(value)
-                    setCurrentPage(1) // Reset to first page when filter changes
+                    setTypeFilter(value);
+                    setCurrentPage(1);
                   }}
                 >
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder={t("common.selectType")} />
                   </SelectTrigger>
                   <SelectContent>
                     {taskTypes.map((type) => (
                       <SelectItem key={type} value={type}>
-                        {type}
+                        {type === "All" ? t("common.all") : type}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Incident:</span>
+                <span className="text-sm font-medium">
+                  {t("tasks.incidentType")}:
+                </span>
                 <Select
                   value={incidentFilter}
                   onValueChange={(value) => {
-                    setIncidentFilter(value)
-                    setCurrentPage(1) // Reset to first page when filter changes
+                    setIncidentFilter(value);
+                    setCurrentPage(1);
                   }}
                 >
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="Select incident" />
+                    <SelectValue placeholder={t("common.selectIncident")} />
                   </SelectTrigger>
                   <SelectContent>
                     {incidentTypes.map((type) => (
                       <SelectItem key={type} value={type}>
-                        {type}
+                        {type === "All" ? t("common.all") : type}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Status:</span>
+                <span className="text-sm font-medium">
+                  {t("tasks.status")}:
+                </span>
                 <Select
                   value={statusFilter}
                   onValueChange={(value) => {
-                    setStatusFilter(value)
-                    setCurrentPage(1) // Reset to first page when filter changes
+                    setStatusFilter(value);
+                    setCurrentPage(1);
                   }}
                 >
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder={t("common.selectStatus")} />
                   </SelectTrigger>
                   <SelectContent>
                     {statusTypes.map((status) => (
                       <SelectItem key={status} value={status}>
-                        {status}
+                        {status === "All"
+                          ? t("common.all")
+                          : t(`tasks.${status.toLowerCase()}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -319,23 +286,18 @@ export default function TaskHistoryPage() {
             </div>
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Date From:</span>
+                <span className="text-sm font-medium">{t("From")}:</span>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant={"outline"}
+                      variant="outline"
                       className={cn(
                         "w-[180px] justify-start text-left font-normal",
-                        !dateFrom && "text-muted-foreground",
+                        !dateFrom && "text-muted-foreground"
                       )}
-                      onClick={() => {
-                        if (dateFrom) {
-                          setCurrentPage(1) // Reset to first page when filter changes
-                        }
-                      }}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateFrom ? format(dateFrom, "PPP") : "Select date"}
+                      {dateFrom ? format(dateFrom, "PPP") : t("selectDate")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -343,8 +305,8 @@ export default function TaskHistoryPage() {
                       mode="single"
                       selected={dateFrom}
                       onSelect={(date) => {
-                        setDateFrom(date)
-                        setCurrentPage(1) // Reset to first page when filter changes
+                        setDateFrom(date);
+                        setCurrentPage(1);
                       }}
                       initialFocus
                     />
@@ -352,23 +314,18 @@ export default function TaskHistoryPage() {
                 </Popover>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Date To:</span>
+                <span className="text-sm font-medium">{t("To")}:</span>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant={"outline"}
+                      variant="outline"
                       className={cn(
                         "w-[180px] justify-start text-left font-normal",
-                        !dateTo && "text-muted-foreground",
+                        !dateTo && "text-muted-foreground"
                       )}
-                      onClick={() => {
-                        if (dateTo) {
-                          setCurrentPage(1) // Reset to first page when filter changes
-                        }
-                      }}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateTo ? format(dateTo, "PPP") : "Select date"}
+                      {dateTo ? format(dateTo, "PPP") : t("selectDate")}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -376,8 +333,8 @@ export default function TaskHistoryPage() {
                       mode="single"
                       selected={dateTo}
                       onSelect={(date) => {
-                        setDateTo(date)
-                        setCurrentPage(1) // Reset to first page when filter changes
+                        setDateTo(date);
+                        setCurrentPage(1);
                       }}
                       initialFocus
                     />
@@ -385,9 +342,14 @@ export default function TaskHistoryPage() {
                 </Popover>
               </div>
               {activeFilterCount > 0 && (
-                <Button variant="ghost" size="sm" onClick={resetFilters} className="ml-auto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="ml-auto"
+                >
                   <X className="mr-2 h-3 w-3" />
-                  Reset Filters
+                  {t("common.resetFilters")}
                 </Button>
               )}
             </div>
@@ -397,40 +359,54 @@ export default function TaskHistoryPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>File Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>SHA256</TableHead>
-                <TableHead>File Time</TableHead>
-                <TableHead>Created Time</TableHead>
-                <TableHead>File Size</TableHead>
-                <TableHead>Incident Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>No</TableHead>
+                <TableHead>{t("tasks.fileName")}</TableHead>
+                <TableHead>{t("tasks.type")}</TableHead>
+                <TableHead>{t("tasks.sha256")}</TableHead>
+                <TableHead>{t("tasks.fileTime")}</TableHead>
+                <TableHead>{t("tasks.createdTime")}</TableHead>
+                <TableHead>{t("tasks.fileSize")}</TableHead>
+                <TableHead>{t("tasks.incidentType")}</TableHead>
+                <TableHead>{t("tasks.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("tasks.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((task) => (
+                currentItems.map((task: any, index: string) => (
                   <TableRow key={task.id}>
-                    <TableCell className="font-medium">{task.fileName}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{task.type}</Badge>
-                    </TableCell>
-                    <TableCell className="font-mono text-xs truncate max-w-[150px]">{task.sha256}</TableCell>
-                    <TableCell>{task.fileTime}</TableCell>
-                    <TableCell>{task.createdTime}</TableCell>
-                    <TableCell>{task.fileSize}</TableCell>
-                    <TableCell>
-                      <Badge className={getIncidentColor(task.incidentType)}>{task.incidentType}</Badge>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
+                    <TableCell className="font-medium">
+                      {task.filename}
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
+                      <Badge variant="outline">{task.category}</Badge>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs truncate max-w-[150px]">
+                      {task.sha256}
+                    </TableCell>
+                    <TableCell>{task.startedAt}</TableCell>
+                    <TableCell>{task.completedAt}</TableCell>
+                    <TableCell>{task.fileSizeMB}</TableCell>
+                    <TableCell>
+                      <Badge className={getIncidentColor(task.incidentType)}>
+                        {task.incidentType}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(task.status)}>
+                        {t(`tasks.${task.status.toLowerCase()}`)}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" asChild>
                         <Link href={`/tasks/history/${task.id}`}>
                           <Eye className="h-4 w-4" />
-                          <span className="sr-only">View</span>
+                          <span className="sr-only">
+                            {t("tasks.viewDetails")}
+                          </span>
                         </Link>
                       </Button>
                     </TableCell>
@@ -439,7 +415,7 @@ export default function TaskHistoryPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={9} className="h-24 text-center">
-                    No tasks found matching your filters. Try adjusting your search or filters.
+                    {t("tasks.noTasksFound")}
                   </TableCell>
                 </TableRow>
               )}
@@ -458,5 +434,5 @@ export default function TaskHistoryPage() {
         </CardContent>
       </Card>
     </DashboardLayout>
-  )
+  );
 }

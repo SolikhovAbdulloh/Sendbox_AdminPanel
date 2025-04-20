@@ -10,7 +10,7 @@ console.log(process.env.NEXT_PUBLIC_API_URL);
 
 api.interceptors.request.use(
   (config) => {
-    let token = 1;
+    let token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

@@ -1,13 +1,26 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -16,10 +29,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Edit, MoreHorizontal, Search, Trash, UserPlus } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Edit, MoreHorizontal, Search, Trash, UserPlus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +40,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 // Sample data for users
 const users = [
@@ -76,41 +89,41 @@ const users = [
     lastLogin: "2023-04-12 11:10:45",
     status: "Active",
   },
-]
+];
 
 export default function UsersPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isAddUserOpen, setIsAddUserOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     fullName: "",
     username: "",
     email: "",
     password: "",
     role: "Analyst",
-  })
+  });
 
   const filteredUsers = users.filter(
     (user) =>
       user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active":
-        return "bg-green-500"
+        return "bg-green-500";
       case "Inactive":
-        return "bg-gray-500"
+        return "bg-gray-500";
       default:
-        return "bg-yellow-500"
+        return "bg-yellow-500";
     }
-  }
+  };
 
   const handleAddUser = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // In a real app, you would add the user to the database
-    setIsAddUserOpen(false)
+    setIsAddUserOpen(false);
     // Reset form
     setNewUser({
       fullName: "",
@@ -118,8 +131,8 @@ export default function UsersPage() {
       email: "",
       password: "",
       role: "Analyst",
-    })
-  }
+    });
+  };
 
   return (
     <DashboardLayout>
@@ -150,7 +163,9 @@ export default function UsersPage() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Add New User</DialogTitle>
-                  <DialogDescription>Create a new administrator account.</DialogDescription>
+                  <DialogDescription>
+                    Create a new administrator account.
+                  </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleAddUser}>
                   <div className="grid gap-4 py-4">
@@ -159,7 +174,9 @@ export default function UsersPage() {
                       <Input
                         id="fullName"
                         value={newUser.fullName}
-                        onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, fullName: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -168,7 +185,9 @@ export default function UsersPage() {
                       <Input
                         id="username"
                         value={newUser.username}
-                        onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, username: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -178,7 +197,9 @@ export default function UsersPage() {
                         id="email"
                         type="email"
                         value={newUser.email}
-                        onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, email: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -188,7 +209,9 @@ export default function UsersPage() {
                         id="password"
                         type="password"
                         value={newUser.password}
-                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                        onChange={(e) =>
+                          setNewUser({ ...newUser, password: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -205,6 +228,7 @@ export default function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
                 <TableHead>Full Name</TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Email</TableHead>
@@ -215,15 +239,18 @@ export default function UsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {filteredUsers.map((user, idx) => (
                 <TableRow key={user.id}>
+                  <TableCell className="font-medium">{idx+1}</TableCell>
                   <TableCell className="font-medium">{user.fullName}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>{user.lastLogin}</TableCell>
                   <TableCell>
-                    <Badge className={getStatusColor(user.status)}>{user.status}</Badge>
+                    <Badge className={getStatusColor(user.status)}>
+                      {user.status}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -261,5 +288,5 @@ export default function UsersPage() {
         </CardContent>
       </Card>
     </DashboardLayout>
-  )
+  );
 }

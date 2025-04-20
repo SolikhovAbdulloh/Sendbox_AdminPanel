@@ -10,7 +10,7 @@ interface useQueryApiType<T> {
 const useQueryApi = <T>({ pathname, url, params }: useQueryApiType<T>) => {
   const axios = useAxios();
   return useQuery({
-    queryKey: [pathname],
+    queryKey: [pathname, url],
 
     queryFn: async () => {
       if (!url) throw new Error("URL berilishi shart!");

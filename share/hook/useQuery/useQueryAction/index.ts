@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useAxios } from "../../useAxios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const useLogin = () => {
   const axios = useAxios();
@@ -23,4 +23,37 @@ const useLogin = () => {
   });
 };
 
-export { useLogin };
+const useCreateFile = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      await axios({
+        url: "/1/cape/tasks/create/file",
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+        body: data,
+      });
+    },
+    onSuccess: (response) => {
+      console.log(response);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          "tasks",
+          "/1/cape/tasks/list/active?page=1&limit=10&status=all&category=all&incidentType=all",
+        ],
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+};
+
+export { useLogin, useCreateFile };

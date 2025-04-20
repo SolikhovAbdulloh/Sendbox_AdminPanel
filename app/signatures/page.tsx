@@ -1,11 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +20,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Edit, Eye, MoreHorizontal, Plus, Search, Trash } from "lucide-react"
-import Link from "next/link"
-import { DataTablePagination } from "@/components/data-table-pagination"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Edit, Eye, MoreHorizontal, Plus, Search, Trash } from "lucide-react";
+import Link from "next/link";
+import { DataTablePagination } from "@/components/data-table-pagination";
 
 // Sample data for signatures
 const signatures = [
@@ -71,61 +78,70 @@ const signatures = [
     id: `SIG-${String(6 + i).padStart(3, "0")}`,
     name: `Signature-Sample-${i + 1}`,
     type: i % 3 === 0 ? "YARA" : i % 3 === 1 ? "Regex" : "Suricata",
-    createdBy: i % 4 === 0 ? "John Doe" : i % 4 === 1 ? "Jane Smith" : i % 4 === 2 ? "Mike Johnson" : "Sarah Williams",
+    createdBy:
+      i % 4 === 0
+        ? "John Doe"
+        : i % 4 === 1
+        ? "Jane Smith"
+        : i % 4 === 2
+        ? "Mike Johnson"
+        : "Sarah Williams",
     createdDate: `2023-03-${(i % 30) + 1}`,
-    lastModified: `2023-04-${(i % 15) + 1} ${10 + (i % 10)}:${10 + (i % 50)}:${10 + (i % 50)}`,
+    lastModified: `2023-04-${(i % 15) + 1} ${10 + (i % 10)}:${10 + (i % 50)}:${
+      10 + (i % 50)
+    }`,
     status: i % 5 === 0 ? "Inactive" : "Active",
   })),
-]
+];
 
 export default function SignaturesPage() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filteredSignatures = signatures.filter(
     (sig) =>
       sig.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sig.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sig.createdBy.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      sig.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Calculate pagination
-  const totalItems = filteredSignatures.length
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+  const totalItems = filteredSignatures.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   // Ensure current page is valid after filtering or changing page size
-  const validCurrentPage = Math.min(currentPage, totalPages)
+  const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
-    setCurrentPage(validCurrentPage)
+    setCurrentPage(validCurrentPage);
   }
 
   // Get current page items
-  const startIndex = (validCurrentPage - 1) * pageSize
-  const endIndex = Math.min(startIndex + pageSize, totalItems)
-  const currentItems = filteredSignatures.slice(startIndex, endIndex)
+  const startIndex = (validCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const currentItems = filteredSignatures.slice(startIndex, endIndex);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active":
-        return "bg-green-500"
+        return "bg-green-500";
       case "Inactive":
-        return "bg-gray-500"
+        return "bg-gray-500";
       default:
-        return "bg-yellow-500"
+        return "bg-yellow-500";
     }
-  }
+  };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
 
   const handlePageSizeChange = (size: number) => {
-    setPageSize(size)
-    setCurrentPage(1) // Reset to first page when page size changes
-  }
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
 
   return (
     <DashboardLayout>
@@ -141,8 +157,8 @@ export default function SignaturesPage() {
                 className="w-64 pl-8"
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setCurrentPage(1) // Reset to first page when search changes
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Reset to first page when search changes
                 }}
               />
             </div>
@@ -158,6 +174,7 @@ export default function SignaturesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Created By</TableHead>
@@ -169,15 +186,18 @@ export default function SignaturesPage() {
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((sig) => (
+                currentItems.map((sig, idx) => (
                   <TableRow key={sig.id}>
+                    <TableCell className="font-medium">{idx + 1}</TableCell>
                     <TableCell className="font-medium">{sig.name}</TableCell>
                     <TableCell>{sig.type}</TableCell>
                     <TableCell>{sig.createdBy}</TableCell>
                     <TableCell>{sig.createdDate}</TableCell>
                     <TableCell>{sig.lastModified}</TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(sig.status)}>{sig.status}</Badge>
+                      <Badge className={getStatusColor(sig.status)}>
+                        {sig.status}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -218,7 +238,8 @@ export default function SignaturesPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="h-24 text-center">
-                    No signatures found matching your search. Try adjusting your search term.
+                    No signatures found matching your search. Try adjusting your
+                    search term.
                   </TableCell>
                 </TableRow>
               )}
@@ -237,5 +258,5 @@ export default function SignaturesPage() {
         </CardContent>
       </Card>
     </DashboardLayout>
-  )
+  );
 }

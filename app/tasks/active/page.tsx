@@ -52,12 +52,9 @@ export default function ActiveTasksPage() {
 
   // Fetch data using useQueryApi
   const { data, isLoading, isError } = useQueryApi({
-    url: `/1/cape/active/tasks/list?page=1&limit=10&status=all&category=all&incidentType=all`,
+    url: `/1/cape/tasks/list/active?page=${currentPage}&limit=${pageSize}&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
     pathname: "tasks",
   });
-  // url: `/1/cape/active/tasks/list?page=${currentPage}&limit=${pageSize}&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
-
-  // Handle loading and error states
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -292,6 +289,7 @@ export default function ActiveTasksPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
                 <TableHead>{t("tasks.fileName")}</TableHead>
                 <TableHead>{t("tasks.type")}</TableHead>
                 <TableHead>{t("tasks.sha256")}</TableHead>
@@ -307,8 +305,9 @@ export default function ActiveTasksPage() {
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((task: any) => (
+                currentItems.map((task: any, index: string) => (
                   <TableRow key={task.id}>
+                    <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell className="font-medium">
                       {task.filename}
                     </TableCell>
@@ -316,7 +315,7 @@ export default function ActiveTasksPage() {
                       <Badge variant="outline">{task.category}</Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs truncate max-w-[150px]">
-                      {task.sha256 ? task.sha256 : 'not info'}
+                      {task.sha256 ? task.sha256 : "not info"}
                     </TableCell>
                     <TableCell>
                       {!task.startedAt ? 0 : task.startedAt}
