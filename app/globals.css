@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 97%; /* gray-50 */
+    --foreground: 0 0% 20%; /* gray-800 */
+
+    --card: 0 0% 100%; /* white */
+    --card-foreground: 0 0% 20%; /* gray-800 */
+
+    --popover: 0 0% 100%; /* white */
+    --popover-foreground: 0 0% 20%; /* gray-800 */
+
+    --primary: 0 0% 0%; /* black */
+    --primary-foreground: 0 0% 100%; /* white */
+
+    --secondary: 0 0% 90%; /* gray-200 */
+    --secondary-foreground: 0 0% 20%; /* gray-800 */
+
+    --muted: 0 0% 95%; /* gray-100 */
+    --muted-foreground: 0 0% 45%; /* gray-500 */
+
+    --accent: 0 0% 90%; /* gray-200 */
+    --accent-foreground: 0 0% 20%; /* gray-800 */
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%; /* white */
+
+    --border: 0 0% 90%; /* gray-200 */
+    --input: 0 0% 90%; /* gray-200 */
+    --ring: 0 0% 0%; /* black */
+
+    --radius: 0.5rem;
+
+    /* Sidebar specific colors */
+    --sidebar-background: 0 0% 95%; /* gray-100 */
+    --sidebar-foreground: 0 0% 20%; /* gray-800 */
+    --sidebar-border: 0 0% 90%; /* gray-200 */
+    --sidebar-accent: 0 0% 90%; /* gray-200 */
+    --sidebar-accent-foreground: 0 0% 20%; /* gray-800 */
+    --sidebar-ring: 0 0% 0%; /* black */
+  }
+
+  .dark {
+    --background: 0 0% 10%; /* gray-900 */
+    --foreground: 0 0% 95%; /* gray-100 */
+
+    --card: 0 0% 15%; /* gray-850 */
+    --card-foreground: 0 0% 95%; /* gray-100 */
+
+    --popover: 0 0% 15%; /* gray-850 */
+    --popover-foreground: 0 0% 95%; /* gray-100 */
+
+    --primary: 0 0% 95%; /* white in dark mode */
+    --primary-foreground: 0 0% 10%; /* black in dark mode */
+
+    --secondary: 0 0% 20%; /* gray-800 */
+    --secondary-foreground: 0 0% 95%; /* gray-100 */
+
+    --muted: 0 0% 20%; /* gray-800 */
+    --muted-foreground: 0 0% 65%; /* gray-400 */
+
+    --accent: 0 0% 25%; /* gray-750 */
+    --accent-foreground: 0 0% 95%; /* gray-100 */
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%; /* white */
+
+    --border: 0 0% 20%; /* gray-800 */
+    --input: 0 0% 20%; /* gray-800 */
+    --ring: 0 0% 80%; /* gray-300 */
+
+    /* Sidebar specific colors for dark mode */
+    --sidebar-background: 0 0% 12%; /* gray-880 */
+    --sidebar-foreground: 0 0% 95%; /* gray-100 */
+    --sidebar-border: 0 0% 20%; /* gray-800 */
+    --sidebar-accent: 0 0% 25%; /* gray-750 */
+    --sidebar-accent-foreground: 0 0% 95%; /* gray-100 */
+    --sidebar-ring: 0 0% 80%; /* gray-300 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Chart colors */
+:root {
+  --chart-1: 0 0% 0%; /* black */
+  --chart-2: 0 0% 30%; /* gray-700 */
+  --chart-3: 0 0% 45%; /* gray-550 */
+  --chart-4: 0 0% 60%; /* gray-400 */
+  --chart-5: 0 0% 75%; /* gray-250 */
+}
+
+.dark {
+  --chart-1: 0 0% 95%; /* white in dark mode */
+  --chart-2: 0 0% 80%; /* gray-200 in dark mode */
+  --chart-3: 0 0% 65%; /* gray-350 in dark mode */
+  --chart-4: 0 0% 50%; /* gray-500 in dark mode */
+  --chart-5: 0 0% 35%; /* gray-650 in dark mode */
+}
