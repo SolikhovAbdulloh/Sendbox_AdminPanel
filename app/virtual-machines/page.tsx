@@ -1,11 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,10 +20,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Edit, Eye, MoreHorizontal, Plus, Search } from "lucide-react"
-import { DataTablePagination } from "@/components/data-table-pagination"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Edit, Eye, MoreHorizontal, Plus, Search } from "lucide-react";
+import { DataTablePagination } from "@/components/data-table-pagination";
 
 // Sample data for virtual machines
 const virtualMachines = [
@@ -69,61 +76,68 @@ const virtualMachines = [
   ...Array.from({ length: 20 }, (_, i) => ({
     id: `VM-${String(6 + i).padStart(3, "0")}`,
     name: `VM-Sample-${i + 1}`,
-    osType: i % 3 === 0 ? "Windows 10" : i % 3 === 1 ? "Ubuntu 20.04 LTS" : "CentOS 8",
+    osType:
+      i % 3 === 0
+        ? "Windows 10"
+        : i % 3 === 1
+        ? "Ubuntu 20.04 LTS"
+        : "CentOS 8",
     status: i % 2 === 0 ? "Running" : "Stopped",
     ipAddress: `192.168.1.${110 + i}`,
     createdDate: `2023-03-${(i % 30) + 1}`,
-    lastUsed: `2023-04-${(i % 15) + 1} ${10 + (i % 10)}:${10 + (i % 50)}:${10 + (i % 50)}`,
+    lastUsed: `2023-04-${(i % 15) + 1} ${10 + (i % 10)}:${10 + (i % 50)}:${
+      10 + (i % 50)
+    }`,
   })),
-]
+];
 
 export default function VirtualMachinesPage() {
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filteredVMs = virtualMachines.filter(
     (vm) =>
       vm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vm.osType.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      vm.osType.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Calculate pagination
-  const totalItems = filteredVMs.length
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
+  const totalItems = filteredVMs.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   // Ensure current page is valid after filtering or changing page size
-  const validCurrentPage = Math.min(currentPage, totalPages)
+  const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
-    setCurrentPage(validCurrentPage)
+    setCurrentPage(validCurrentPage);
   }
 
   // Get current page items
-  const startIndex = (validCurrentPage - 1) * pageSize
-  const endIndex = Math.min(startIndex + pageSize, totalItems)
-  const currentItems = filteredVMs.slice(startIndex, endIndex)
+  const startIndex = (validCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const currentItems = filteredVMs.slice(startIndex, endIndex);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Running":
-        return "bg-green-500"
+        return "bg-green-500";
       case "Stopped":
-        return "bg-gray-500"
+        return "bg-gray-500";
       default:
-        return "bg-yellow-500"
+        return "bg-yellow-500";
     }
-  }
+  };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
 
   const handlePageSizeChange = (size: number) => {
-    setPageSize(size)
-    setCurrentPage(1) // Reset to first page when page size changes
-  }
+    setPageSize(size);
+    setCurrentPage(1); // Reset to first page when page size changes
+  };
 
   return (
     <DashboardLayout>
@@ -139,8 +153,8 @@ export default function VirtualMachinesPage() {
                 className="w-64 pl-8"
                 value={searchTerm}
                 onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setCurrentPage(1) // Reset to first page when search changes
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Reset to first page when search changes
                 }}
               />
             </div>
@@ -154,6 +168,7 @@ export default function VirtualMachinesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>No</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>OS Type</TableHead>
                 <TableHead>Status</TableHead>
@@ -165,12 +180,15 @@ export default function VirtualMachinesPage() {
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((vm) => (
+                currentItems.map((vm, idx) => (
                   <TableRow key={vm.id}>
+                    <TableCell className="font-medium">{idx + 1}</TableCell>
                     <TableCell className="font-medium">{vm.name}</TableCell>
                     <TableCell>{vm.osType}</TableCell>
                     <TableCell>
-                      <Badge className={getStatusColor(vm.status)}>{vm.status}</Badge>
+                      <Badge className={getStatusColor(vm.status)}>
+                        {vm.status}
+                      </Badge>
                     </TableCell>
                     <TableCell>{vm.ipAddress}</TableCell>
                     <TableCell>{vm.createdDate}</TableCell>
@@ -200,7 +218,9 @@ export default function VirtualMachinesPage() {
                             <DropdownMenuItem>Start</DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">
+                            Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -209,7 +229,8 @@ export default function VirtualMachinesPage() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} className="h-24 text-center">
-                    No virtual machines found matching your search. Try adjusting your search term.
+                    No virtual machines found matching your search. Try
+                    adjusting your search term.
                   </TableCell>
                 </TableRow>
               )}
@@ -228,5 +249,5 @@ export default function VirtualMachinesPage() {
         </CardContent>
       </Card>
     </DashboardLayout>
-  )
+  );
 }
