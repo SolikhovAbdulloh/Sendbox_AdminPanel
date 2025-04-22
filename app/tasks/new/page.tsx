@@ -73,11 +73,11 @@ const analysisPackages = [
 ];
 
 const machines = [
-  { value: "win10x64-1", label: "Windows 10 x64 #1" },
-  { value: "win10x64-2", label: "Windows 10 x64 #2" },
-  { value: "win7x86-1", label: "Windows 7 x86 #1" },
-  { value: "ubuntu2004-1", label: "Ubuntu 20.04 #1" },
-  { value: "macos-1", label: "macOS Monterey #1" },
+  { value: "win10", label: "Windows 10 x64 #1" },
+  // { value: "win10x64-2", label: "Windows 10 x64 #2" },
+  // { value: "win7x86-1", label: "Windows 7 x86 #1" },
+  // { value: "ubuntu2004-1", label: "Ubuntu 20.04 #1" },
+  // { value: "macos-1", label: "macOS Monterey #1" },
 ];
 
 export default function NewTaskPage() {
@@ -225,6 +225,7 @@ export default function NewTaskPage() {
                   >
                     <input
                       type="file"
+                      accept=".zip, .msi"
                       ref={fileInputRef}
                       className="hidden"
                       onChange={handleFileInputChange}

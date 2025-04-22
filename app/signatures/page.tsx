@@ -25,103 +25,53 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Eye, MoreHorizontal, Plus, Search, Trash } from "lucide-react";
 import Link from "next/link";
 import { DataTablePagination } from "@/components/data-table-pagination";
-
-// Sample data for signatures
-const signatures = [
-  {
-    id: "SIG-001",
-    name: "Ransomware Detection",
-    type: "YARA",
-    createdBy: "John Doe",
-    createdDate: "2023-01-15",
-    lastModified: "2023-04-10 14:32:10",
-    status: "Active",
-  },
-  {
-    id: "SIG-002",
-    name: "Phishing Email Pattern",
-    type: "Regex",
-    createdBy: "Jane Smith",
-    createdDate: "2023-01-20",
-    lastModified: "2023-04-05 10:15:22",
-    status: "Active",
-  },
-  {
-    id: "SIG-003",
-    name: "Malware Behavior",
-    type: "YARA",
-    createdBy: "Mike Johnson",
-    createdDate: "2023-02-05",
-    lastModified: "2023-04-12 09:45:30",
-    status: "Inactive",
-  },
-  {
-    id: "SIG-004",
-    name: "Suspicious Network Traffic",
-    type: "Suricata",
-    createdBy: "Sarah Williams",
-    createdDate: "2023-02-10",
-    lastModified: "2023-03-20 16:20:15",
-    status: "Active",
-  },
-  {
-    id: "SIG-005",
-    name: "Data Exfiltration",
-    type: "YARA",
-    createdBy: "David Brown",
-    createdDate: "2023-03-01",
-    lastModified: "2023-04-01 11:10:45",
-    status: "Active",
-  },
-  // Add more sample data to demonstrate pagination
-  ...Array.from({ length: 25 }, (_, i) => ({
-    id: `SIG-${String(6 + i).padStart(3, "0")}`,
-    name: `Signature-Sample-${i + 1}`,
-    type: i % 3 === 0 ? "YARA" : i % 3 === 1 ? "Regex" : "Suricata",
-    createdBy:
-      i % 4 === 0
-        ? "John Doe"
-        : i % 4 === 1
-        ? "Jane Smith"
-        : i % 4 === 2
-        ? "Mike Johnson"
-        : "Sarah Williams",
-    createdDate: `2023-03-${(i % 30) + 1}`,
-    lastModified: `2023-04-${(i % 15) + 1} ${10 + (i % 10)}:${10 + (i % 50)}:${
-      10 + (i % 50)
-    }`,
-    status: i % 5 === 0 ? "Inactive" : "Active",
-  })),
-];
+import { useQueryApi } from "@/share/hook/useQuery";
+import { useDebounce } from "use-debounce";
+interface Signature {
+  id: string;
+  name: string;
+  type: string;
+  uploadedBy: string;
+  createdAt: string;
+  lastModifiedAt: string;
+  status: string;
+}
 
 export default function SignaturesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Pagination state
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const filteredSignatures = signatures.filter(
-    (sig) =>
-      sig.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sig.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sig.createdBy.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const { data, isLoading, error } = useQueryApi<{
+    signatures: Signature[];
+    total: number;
+  }>({
+    url: `/1/cape/tasks/signatures?page=${currentPage}&limit=${pageSize}`,
+    pathname: "signatures",
+  });
 
-  // Calculate pagination
+  const filteredSignatures =
+    data?.filter(
+      (sig: Signature) =>
+        sig.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        sig.type?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        sig.uploadedBy
+          ?.toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase())
+    ) || [];
+
   const totalItems = filteredSignatures.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
-  // Ensure current page is valid after filtering or changing page size
   const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
     setCurrentPage(validCurrentPage);
   }
 
-  // Get current page items
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
   const currentItems = filteredSignatures.slice(startIndex, endIndex);
+  console.log(currentItems);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -140,8 +90,11 @@ export default function SignaturesPage() {
 
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
-    setCurrentPage(1); // Reset to first page when page size changes
+    setCurrentPage(1);
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <DashboardLayout>
@@ -158,8 +111,9 @@ export default function SignaturesPage() {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setCurrentPage(1); // Reset to first page when search changes
+                  setCurrentPage(1);
                 }}
+                aria-label="Search signatures by name, type, or creator"
               />
             </div>
             <Button asChild>
@@ -186,14 +140,16 @@ export default function SignaturesPage() {
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((sig, idx) => (
+                currentItems.map((sig: Signature, idx: number) => (
                   <TableRow key={sig.id}>
-                    <TableCell className="font-medium">{idx + 1}</TableCell>
+                    <TableCell className="font-medium">
+                      {startIndex + idx + 1}
+                    </TableCell>
                     <TableCell className="font-medium">{sig.name}</TableCell>
                     <TableCell>{sig.type}</TableCell>
-                    <TableCell>{sig.createdBy}</TableCell>
-                    <TableCell>{sig.createdDate}</TableCell>
-                    <TableCell>{sig.lastModified}</TableCell>
+                    <TableCell>{sig.uploadedBy}</TableCell>
+                    <TableCell>{sig.createdAt}</TableCell>
+                    <TableCell>{sig.lastModifiedAt}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(sig.status)}>
                         {sig.status}
@@ -237,16 +193,16 @@ export default function SignaturesPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    No signatures found matching your search. Try adjusting your
-                    search term.
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    {searchTerm
+                      ? "No signatures found matching your search. Try adjusting your search term."
+                      : "No signatures available."}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
 
-          {/* Pagination */}
           <DataTablePagination
             currentPage={validCurrentPage}
             totalPages={totalPages}

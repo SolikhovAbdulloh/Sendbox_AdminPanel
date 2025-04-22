@@ -25,16 +25,21 @@ import {
 import { Globe } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLogin } from "@/share/hook/useQuery/useQueryAction";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { language, setLanguage, t } = useLanguage();
-  const { mutate, isPending, isSuccess } = useLogin();
+  const { mutate, isPending } = useLogin();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    mutate({ password, username });
+    mutate(
+      { password, username },
+      { onSuccess: () => router.replace("/dashboard") }
+    );
   };
 
   return (
@@ -108,7 +113,7 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isPending}>
-                {!isPending ? "SignIn" : t("Loading...")}
+                {isPending ? t("Loading...") : "SignIn"}
               </Button>
             </div>
           </form>

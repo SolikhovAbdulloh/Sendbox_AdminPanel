@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ export default function NewSignaturePage() {
 
   const payload = {
     name: signatureName,
-    type: "yar",
+    type: signatureType,
     rule: signatureCode,
   };
   console.log(payload);
@@ -51,7 +51,11 @@ export default function NewSignaturePage() {
 
     mutate(payload);
   };
-  isSuccess && router.push("/signatures");
+  useEffect(() => {
+    if (isSuccess) {
+      router.push("/signatures");
+    }
+  }, [isSuccess]);
 
   const handleCancel = () => {
     router.push("/signatures");
@@ -216,10 +220,10 @@ export default function NewSignaturePage() {
                   <SelectValue placeholder="Select signature type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="YARA">YARA</SelectItem>
-                  <SelectItem value="Regex">Regex</SelectItem>
+                  <SelectItem value="yar">YARA</SelectItem>
+                  {/* <SelectItem value="Regex">Regex</SelectItem>
                   <SelectItem value="Suricata">Suricata</SelectItem>
-                  <SelectItem value="Custom">Custom</SelectItem>
+                  <SelectItem value="Custom">Custom</SelectItem> */}
                 </SelectContent>
               </Select>
             </div>

@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -298,7 +299,7 @@ export default function ActiveTasksPage() {
                 <TableHead>{t("tasks.fileSize")}</TableHead>
                 <TableHead>{t("tasks.incidentType")}</TableHead>
                 <TableHead>{t("tasks.status")}</TableHead>
-                <TableHead className="text-right">
+                <TableHead className="flex items-center justify-center">
                   {t("common.delete")}
                 </TableHead>
               </TableRow>
@@ -334,33 +335,11 @@ export default function ActiveTasksPage() {
                         {t(`tasks.${task.status.toLowerCase()}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">
-                              {t("tasks.actions")}
-                            </span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>
-                            {t("common.actions")}
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <Eye className="mr-2 h-4 w-4" />
-                            {t("tasks.viewDetails")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            {t("tasks.cancelTask")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            {t("tasks.restartTask")}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    <TableCell className="flex items-center justify-center">
+                      <Trash2
+                        size={18}
+                        className="cursor-pointer hover:text-[red]"
+                      />
                     </TableCell>
                   </TableRow>
                 ))
