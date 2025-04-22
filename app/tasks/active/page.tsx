@@ -299,7 +299,7 @@ export default function ActiveTasksPage() {
                 <TableHead>{t("tasks.incidentType")}</TableHead>
                 <TableHead>{t("tasks.status")}</TableHead>
                 <TableHead className="text-right">
-                  {t("tasks.actions")}
+                  {t("common.delete")}
                 </TableHead>
               </TableRow>
             </TableHeader>

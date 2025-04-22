@@ -112,7 +112,8 @@
     "pending": "Pending",
     "analyzing": "Analyzing",
     "completed": "Completed",
-    "failed": "Failed"
+    "failed": "Failed",
+    "delete": "Delete"
   },
   "virtualMachines": {
     "title": "Virtual Machines",

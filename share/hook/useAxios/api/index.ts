@@ -1,12 +1,11 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: 'https://datagaze-sandbox-b8e288ff5051.herokuapp.com/api', 
   headers: {
     "Content-Type": "application/json",
   },
 });
-console.log(process.env.NEXT_PUBLIC_API_URL);
 
 api.interceptors.request.use(
   (config) => {

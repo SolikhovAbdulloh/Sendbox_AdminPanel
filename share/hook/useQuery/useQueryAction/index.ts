@@ -57,11 +57,14 @@ const useCreateFile = () => {
 };
 
 const useUploadSignature = () => {
-//   const queryClient = useQueryClient();
   const axios = useAxios();
   return useMutation({
     mutationFn: async (data: object) => {
-      await axios({ url: "/1/cape/tasks/upload", method: "POST", body: data });
+      await axios({
+        url: "/1/cape/tasks/upload/signature",
+        method: "POST",
+        body: data,
+      });
     },
     onSuccess: (res) => {
       console.log(res);

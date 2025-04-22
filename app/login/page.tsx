@@ -30,7 +30,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { language, setLanguage, t } = useLanguage();
-  const { mutate, isPending } = useLogin();
+  const { mutate, isPending, isSuccess } = useLogin();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -108,7 +108,7 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? t("auth.signingIn") : t("auth.signIn")}
+                {!isPending ? "SignIn" : t("Loading...")}
               </Button>
             </div>
           </form>

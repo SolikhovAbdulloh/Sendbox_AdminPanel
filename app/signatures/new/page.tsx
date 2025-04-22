@@ -38,17 +38,18 @@ export default function NewSignaturePage() {
   const [isDragging, setIsDragging] = useState(false);
 
   const { mutate, isPending, isSuccess } = useUploadSignature();
-  let ObjSignature = {
+
+  const payload = {
     name: signatureName,
-    type: signatureType,
+    type: "yar",
     rule: signatureCode,
   };
+  console.log(payload);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    mutate(ObjSignature);
-    // In a real app, you would save the signature to the database
-    // For demo purposes, we'll just redirect back to the signatures page
+    mutate(payload);
   };
   isSuccess && router.push("/signatures");
 
