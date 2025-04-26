@@ -98,7 +98,7 @@ export default function NewTaskPage() {
   const [priority, setPriority] = useState("medium");
   const [preScript, setPreScript] = useState<File | null>(null);
   const [duringScript, setDuringScript] = useState<File | null>(null);
-  const { mutate, isSuccess, isPending, isError } = useCreateFile();
+  const { mutate, isSuccess, isPending } = useCreateFile();
 
   const handleCancel = () => {
     router.push(`/tasks/active`);

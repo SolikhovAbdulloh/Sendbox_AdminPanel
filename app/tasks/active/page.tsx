@@ -14,16 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Badge } from "@/components/ui/badge";
-import { Eye, Filter, MoreHorizontal, Search, X, Plus } from "lucide-react";
+import { Filter, Search, X, Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
