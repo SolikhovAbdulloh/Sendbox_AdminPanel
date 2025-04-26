@@ -27,6 +27,7 @@ import Link from "next/link";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useDebounce } from "use-debounce";
+import { useLanguage } from "@/contexts/language-context";
 interface Signature {
   id: string;
   name: string;
@@ -38,12 +39,14 @@ interface Signature {
 }
 
 export default function SignaturesPage() {
+  const { t } = useLanguage();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const { data, isLoading, error } = useQueryApi<{
+  const { data, isLoading, isError } = useQueryApi<{
     signatures: Signature[];
     total: number;
   }>({
@@ -93,6 +96,38 @@ export default function SignaturesPage() {
     setCurrentPage(1);
   };
 
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("tasks.historyTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-10">{t("common.loading")}</div>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
+  }
+
+  // Handle error state
+  if (isError || !data) {
+    return (
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("tasks.historyTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-10 text-red-500">
+              {t("common.errorLoadingData")}
+            </div>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
