@@ -1,10 +1,11 @@
 import { useRouter } from "next/navigation";
 import { useAxios } from "../../useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Router } from "next/router";
 
 const useLogin = () => {
   const axios = useAxios();
-
+  const router = useRouter();
   return useMutation({
     mutationFn: async (data: any) =>
       await axios({ url: "/1/auth/login", body: data, method: "POST" }),
@@ -12,6 +13,7 @@ const useLogin = () => {
     onSuccess: async (response) => {
       if (response.status === "success") {
         localStorage.setItem("token", response.token);
+        router.push("/dashboard");
       }
     },
 

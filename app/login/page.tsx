@@ -45,9 +45,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (token) {
-      router.replace("/dashboard");
-    } else {
-      router.replace("/login");
+      return router.replace("/dashboard");
     }
   }, [token, router]);
 
