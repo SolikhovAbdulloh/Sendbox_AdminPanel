@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,14 +33,19 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const { language, setLanguage, t } = useLanguage();
   const { mutate, isPending } = useLogin();
-
+  const token = localStorage.getItem("token");
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    mutate(
-      { password, username },
-      { onSuccess: () => router.replace("/dashboard") }
-    );
+    mutate({ password, username });
   };
+
+  useEffect(() => {
+    if (token) {
+      router.replace("/dashboard");
+    } else {
+      router.replace("/login");
+    }
+  }, [token, router]);
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-background">

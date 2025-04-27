@@ -65,6 +65,7 @@ export default function SignaturesPage() {
     ) || [];
 
   const totalItems = filteredSignatures.length;
+
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
@@ -78,9 +79,9 @@ export default function SignaturesPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Active":
+      case "active":
         return "bg-green-500";
-      case "Inactive":
+      case "inactive":
         return "bg-gray-500";
       default:
         return "bg-yellow-500";
@@ -209,7 +210,7 @@ export default function SignaturesPage() {
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
-                          {sig.status === "Active" ? (
+                          {sig.status === "active" ? (
                             <DropdownMenuItem>Deactivate</DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem>Activate</DropdownMenuItem>
