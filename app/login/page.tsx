@@ -33,11 +33,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const { language, setLanguage, t } = useLanguage();
   const { mutate, isPending } = useLogin();
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState<string | null>(null);
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     mutate({ password, username });
   };
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);
+  }, []);
 
   useEffect(() => {
     if (token) {
