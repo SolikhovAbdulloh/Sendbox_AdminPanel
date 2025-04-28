@@ -57,7 +57,7 @@ export default function TaskHistoryPage() {
     date ? format(date, "yyyy-MM-dd") : "";
 
   // Construct API query URL with dynamic filters and pagination (no search parameter)
-  const { data, isLoading, isError } = useQueryApi({
+  const { data, isLoading } = useQueryApi({
     url: `/1/cape/tasks/list/history?page=${currentPage}&limit=${pageSize}&status=${
       statusFilter === "All" ? "all" : statusFilter.toLowerCase()
     }&category=${
@@ -80,24 +80,6 @@ export default function TaskHistoryPage() {
           </CardHeader>
           <CardContent>
             <div className="text-center py-10">{t("common.loading")}</div>
-          </CardContent>
-        </Card>
-      </DashboardLayout>
-    );
-  }
-
-  // Handle error state
-  if (isError || !data) {
-    return (
-      <DashboardLayout>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("tasks.historyTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-10 text-red-500">
-              {t("common.errorLoadingData")}
-            </div>
           </CardContent>
         </Card>
       </DashboardLayout>
@@ -129,9 +111,9 @@ export default function TaskHistoryPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "reported":
+        return "bg-orange-500";
+      case "completed":
         return "bg-green-500";
-      case "Failed":
-        return "bg-red-500";
       default:
         return "bg-gray-500";
     }

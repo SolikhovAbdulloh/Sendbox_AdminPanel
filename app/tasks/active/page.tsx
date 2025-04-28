@@ -64,23 +64,6 @@ export default function ActiveTasksPage() {
     );
   }
 
-  if (isError || !data) {
-    return (
-      <DashboardLayout>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("tasks.activeTitle")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-10 text-red-500">
-              {t("common.errorLoadingData")}
-            </div>
-          </CardContent>
-        </Card>
-      </DashboardLayout>
-    );
-  }
-
   // Extract tasks from data (adjust based on actual API response structure)
   const tasks = data || []; // Assuming data.tasks is the array of tasks, or data itself is the array
 
