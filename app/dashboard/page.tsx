@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckSquare, Clock, Laptop, ShieldAlert } from "lucide-react"
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckSquare, Clock, Laptop, ShieldAlert } from "lucide-react";
 import {
   CartesianGrid,
   Cell,
@@ -15,9 +15,13 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { useLanguage } from "@/contexts/language-context"
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { useLanguage } from "@/contexts/language-context";
 
 // Sample data for the dashboard
 const taskData = [
@@ -28,19 +32,19 @@ const taskData = [
   { day: "Fri", tasks: 30 },
   { day: "Sat", tasks: 18 },
   { day: "Sun", tasks: 10 },
-]
+];
 
 const incidentData = [
   { name: "Malware", value: 35 },
   { name: "Phishing", value: 25 },
   { name: "Ransomware", value: 15 },
   { name: "Other", value: 25 },
-]
+];
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function DashboardPage() {
-  const { t } = useLanguage()
+  const { t } = useLanguage();
 
   return (
     <DashboardLayout>
@@ -49,7 +53,9 @@ export default function DashboardPage() {
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("dashboard.totalTasks")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("dashboard.totalTasks")}
+              </CardTitle>
               <CheckSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -58,7 +64,9 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("dashboard.detectedIncidents")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("dashboard.detectedIncidents")}
+              </CardTitle>
               <ShieldAlert className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -67,7 +75,9 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("dashboard.pendingTasks")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("dashboard.pendingTasks")}
+              </CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -76,7 +86,9 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("dashboard.virtualMachines")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("dashboard.virtualMachines")}
+              </CardTitle>
               <Laptop className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -87,11 +99,11 @@ export default function DashboardPage() {
 
         {/* Charts */}
         <div className="grid gap-5 md:grid-cols-2">
-          <Card>
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>{t("dashboard.tasksLastWeek")}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="h-[300px]">
               <ChartContainer
                 config={{
                   tasks: {
@@ -99,7 +111,7 @@ export default function DashboardPage() {
                     color: "hsl(var(--chart-1))",
                   },
                 }}
-                className="h-[300px]"
+                className="h-full w-full"
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={taskData}>
@@ -112,44 +124,48 @@ export default function DashboardPage() {
                       dataKey="tasks"
                       stroke="var(--color-tasks)"
                       strokeWidth={2}
-                      activeDot={{ r: 8 }}
+                      activeDot={{ r: 6 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartContainer>
             </CardContent>
           </Card>
-          <Card>
+
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>{t("dashboard.incidentDistribution")}</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="h-[300px] flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={incidentData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {incidentData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+            <CardContent className="h-[300px] flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={incidentData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {incidentData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

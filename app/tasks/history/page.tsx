@@ -128,9 +128,9 @@ export default function TaskHistoryPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Completed":
+      case "reported":
         return "bg-green-500";
-      case "Failed":
+      case "unknown":
         return "bg-red-500";
       default:
         return "bg-gray-500";

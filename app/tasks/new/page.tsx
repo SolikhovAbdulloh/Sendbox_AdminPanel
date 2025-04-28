@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/tooltip";
 import { FileUp, Info, Send, X } from "lucide-react";
 import { useCreateFile } from "@/share/hook/useQuery/useQueryAction";
+import { useLanguage } from "@/contexts/language-context";
 
 // Sample data for dropdowns
 const analysisPackages = [
@@ -81,6 +82,7 @@ const machines = [
 ];
 
 export default function NewTaskPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const preScriptRef = useRef<HTMLInputElement>(null);
@@ -195,7 +197,7 @@ export default function NewTaskPage() {
     <DashboardLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Create New Task</CardTitle>
+          <CardTitle>{t("tasks.create")}</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
@@ -205,13 +207,13 @@ export default function NewTaskPage() {
               onValueChange={setActiveTab}
             >
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="file">File Upload</TabsTrigger>
-                <TabsTrigger value="url">URL Input</TabsTrigger>
+                <TabsTrigger value="file">{t("tasks.fileUpload")}</TabsTrigger>
+                <TabsTrigger value="url">{t("tasks.urlInput")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="file" className="space-y-6 pt-4">
                 <div className="grid gap-3">
-                  <Label>Upload File for Analysis</Label>
+                  <Label>{t("tasks.uploadFile")}</Label>
                   <div
                     className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
                       isDragging
@@ -254,10 +256,10 @@ export default function NewTaskPage() {
                       <>
                         <FileUp className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
                         <p className="text-sm font-medium mb-1">
-                          Drag and drop your file here or click to browse
+                          {t("tasks.dragDropFile")}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Supports various file types for malware analysis
+                          {t("tasks.supportsFileTypes")}
                         </p>
                       </>
                     )}
@@ -267,7 +269,7 @@ export default function NewTaskPage() {
 
               <TabsContent value="url" className="space-y-6 pt-4">
                 <div className="grid gap-3">
-                  <Label htmlFor="url-input">Suspicious URL</Label>
+                  <Label htmlFor="url-input">{t("tasks.suspiciousUrl")}</Label>
                   <Input
                     id="url-input"
                     placeholder="https://example.com/suspicious-page"
@@ -276,8 +278,7 @@ export default function NewTaskPage() {
                     required={activeTab === "url"}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Enter a URL to analyze. The system will visit the URL and
-                    capture network traffic and behavior.
+                    {t("tasks.urlDescription")}
                   </p>
                 </div>
               </TabsContent>
@@ -286,7 +287,9 @@ export default function NewTaskPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="grid gap-3">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="analysis-package">Analysis Package</Label>
+                  <Label htmlFor="analysis-package">
+                    {t("tasks.analysisPackage")}
+                  </Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -330,7 +333,7 @@ export default function NewTaskPage() {
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="machine">Machine</Label>
+                <Label htmlFor="machine">{t("tasks.machine")}</Label>
                 <Select value={machine} onValueChange={setMachine} required>
                   <SelectTrigger id="machine">
                     <SelectValue placeholder="Select machine" />
@@ -347,7 +350,7 @@ export default function NewTaskPage() {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="options">Options</Label>
+              <Label htmlFor="options">{t("tasks.options")}</Label>
               <Input
                 id="options"
                 placeholder="timeout=120,enforce_timeout=1,process_memory=1"
@@ -355,13 +358,12 @@ export default function NewTaskPage() {
                 onChange={(e) => setOptions(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Comma-separated list of options to pass to the analyzer (e.g.,
-                timeout=120,enforce_timeout=1)
+                {t("tasks.optionsDescription")}
               </p>
             </div>
 
             <div className="grid gap-3">
-              <Label>Priority</Label>
+              <Label>{t("tasks.priority")}</Label>
               <RadioGroup
                 value={priority}
                 onValueChange={setPriority}
@@ -370,19 +372,19 @@ export default function NewTaskPage() {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="low" id="priority-low" />
                   <Label htmlFor="priority-low" className="cursor-pointer">
-                    Low
+                    {t("tasks.low")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="medium" id="priority-medium" />
                   <Label htmlFor="priority-medium" className="cursor-pointer">
-                    Medium
+                    {t("tasks.medium")}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="high" id="priority-high" />
                   <Label htmlFor="priority-high" className="cursor-pointer">
-                    High
+                    {t("tasks.high")}
                   </Label>
                 </div>
               </RadioGroup>
@@ -390,7 +392,7 @@ export default function NewTaskPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="grid gap-3">
-                <Label>Python Pre-Execution Script (optional)</Label>
+                <Label>{t("tasks.duringExecutionScript")}</Label>
                 <div className="flex items-center gap-2">
                   <input
                     type="file"
@@ -420,12 +422,13 @@ export default function NewTaskPage() {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  This script will run before the main analysis starts
+                  {t("tasks.preScriptDescription")}
                 </p>
               </div>
 
               <div className="grid gap-3">
-                <Label>Python During-Execution Script (optional)</Label>
+                <Label>{t("tasks.duringExecutionScript")}</Label>
+
                 <div className="flex items-center gap-2">
                   <input
                     type="file"
@@ -455,7 +458,7 @@ export default function NewTaskPage() {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  This script will run during the analysis process
+                  {t("tasks.duringScriptDescription")}
                 </p>
               </div>
             </div>
@@ -463,11 +466,11 @@ export default function NewTaskPage() {
           <CardFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={handleCancel}>
               <X className="mr-2 h-4 w-4" />
-              Cancel
+              {t("tasks.cancelTask")}
             </Button>
             <Button type="submit">
               <Send className="mr-2 h-4 w-4" />
-              {isPending ? "Loading..." : "Submit Task"}
+              {isPending ? "Loading..." : t("tasks.submitTask")}
             </Button>
           </CardFooter>
         </form>

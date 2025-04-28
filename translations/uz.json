@@ -65,6 +65,7 @@
     "incidentDistribution": "Hodisalar taqsimoti"
   },
   "tasks": {
+    "create":"Yangi vazifa yarating",
     "title": "Vazifalar",
     "activeTitle": "Faol vazifalar",
     "historyTitle": "Vazifalar tarixi",

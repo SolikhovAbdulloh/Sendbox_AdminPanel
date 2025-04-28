@@ -205,10 +205,7 @@ export default function SignaturesPage() {
                               View
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
+
                           {sig.status === "active" ? (
                             <DropdownMenuItem>Deactivate</DropdownMenuItem>
                           ) : (

@@ -1,20 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ArrowLeft, Download, Save, X } from "lucide-react"
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ArrowLeft, Download, Save, X } from "lucide-react";
 
-// Sample signature data
 const signatureData = {
   id: "SIG-001",
   name: "Ransomware Detection",
@@ -67,44 +79,49 @@ const signatureData = {
       taskId: "TASK-0999",
     },
   ],
-}
+};
 
-export default function SignatureDetailsPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
-  const signatureId = params.id
+export default function SignatureDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const router = useRouter();
+  const { id: signatureId } = React.use(params);
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [signatureName, setSignatureName] = useState(signatureData.name)
-  const [signatureType, setSignatureType] = useState(signatureData.type)
-  const [signatureDescription, setSignatureDescription] = useState(signatureData.description)
-  const [signatureCode, setSignatureCode] = useState(signatureData.code)
+  const [isEditing, setIsEditing] = useState(false);
+  const [signatureName, setSignatureName] = useState(signatureData.name);
+  const [signatureType, setSignatureType] = useState(signatureData.type);
+  const [signatureDescription, setSignatureDescription] = useState(
+    signatureData.description
+  );
+  const [signatureCode, setSignatureCode] = useState(signatureData.code);
 
   const handleSave = () => {
-    // In a real app, you would save the changes to the database
-    setIsEditing(false)
+    setIsEditing(false);
     // Show success message
-    alert("Signature updated successfully!")
-  }
+    alert("Signature updated successfully!");
+  };
 
   const handleCancel = () => {
     // Reset form values to original data
-    setSignatureName(signatureData.name)
-    setSignatureType(signatureData.type)
-    setSignatureDescription(signatureData.description)
-    setSignatureCode(signatureData.code)
-    setIsEditing(false)
-  }
+    setSignatureName(signatureData.name);
+    setSignatureType(signatureData.type);
+    setSignatureDescription(signatureData.description);
+    setSignatureCode(signatureData.code);
+    setIsEditing(false);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Active":
-        return "bg-green-500"
+        return "bg-green-500";
       case "Inactive":
-        return "bg-gray-500"
+        return "bg-gray-500";
       default:
-        return "bg-yellow-500"
+        return "bg-yellow-500";
     }
-  }
+  };
 
   return (
     <DashboardLayout>
@@ -113,8 +130,12 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-semibold">Signature Details: {signatureId}</h1>
-          <Badge className={getStatusColor(signatureData.status)}>{signatureData.status}</Badge>
+          <h1 className="text-xl font-semibold">
+            Signature Details: {signatureId}
+          </h1>
+          <Badge className={getStatusColor(signatureData.status)}>
+            {signatureData.status}
+          </Badge>
         </div>
         <div className="flex gap-2">
           {!isEditing ? (
@@ -165,14 +186,19 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
                       required
                     />
                   ) : (
-                    <div className="p-2 border rounded-md bg-muted/30">{signatureData.name}</div>
+                    <div className="p-2 border rounded-md bg-muted/30">
+                      {signatureData.name}
+                    </div>
                   )}
                 </div>
 
                 <div className="grid gap-3">
                   <Label htmlFor="signature-type">Signature Type</Label>
                   {isEditing ? (
-                    <Select value={signatureType} onValueChange={setSignatureType}>
+                    <Select
+                      value={signatureType}
+                      onValueChange={setSignatureType}
+                    >
                       <SelectTrigger id="signature-type">
                         <SelectValue placeholder="Select signature type" />
                       </SelectTrigger>
@@ -184,7 +210,9 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="p-2 border rounded-md bg-muted/30">{signatureData.type}</div>
+                    <div className="p-2 border rounded-md bg-muted/30">
+                      {signatureData.type}
+                    </div>
                   )}
                 </div>
               </div>
@@ -199,7 +227,9 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
                     className="resize-none"
                   />
                 ) : (
-                  <div className="p-2 border rounded-md bg-muted/30">{signatureData.description}</div>
+                  <div className="p-2 border rounded-md bg-muted/30">
+                    {signatureData.description}
+                  </div>
                 )}
               </div>
 
@@ -209,7 +239,10 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
                       {signatureCode.split("\n").map((_, i) => (
-                        <div key={i} className="h-6 flex items-center justify-center">
+                        <div
+                          key={i}
+                          className="h-6 flex items-center justify-center"
+                        >
                           {i + 1}
                         </div>
                       ))}
@@ -227,7 +260,10 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
                       {signatureData.code.split("\n").map((_, i) => (
-                        <div key={i} className="h-6 flex items-center justify-center">
+                        <div
+                          key={i}
+                          className="h-6 flex items-center justify-center"
+                        >
                           {i + 1}
                         </div>
                       ))}
@@ -245,23 +281,31 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="grid gap-3">
                   <Label>Created By</Label>
-                  <div className="p-2 border rounded-md bg-muted/30">{signatureData.createdBy}</div>
+                  <div className="p-2 border rounded-md bg-muted/30">
+                    {signatureData.createdBy}
+                  </div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Created Date</Label>
-                  <div className="p-2 border rounded-md bg-muted/30">{signatureData.createdDate}</div>
+                  <div className="p-2 border rounded-md bg-muted/30">
+                    {signatureData.createdDate}
+                  </div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Last Modified</Label>
-                  <div className="p-2 border rounded-md bg-muted/30">{signatureData.lastModified}</div>
+                  <div className="p-2 border rounded-md bg-muted/30">
+                    {signatureData.lastModified}
+                  </div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Status</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    <Badge className={getStatusColor(signatureData.status)}>{signatureData.status}</Badge>
+                    <Badge className={getStatusColor(signatureData.status)}>
+                      {signatureData.status}
+                    </Badge>
                   </div>
                 </div>
               </div>
@@ -287,12 +331,16 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
                 <TableBody>
                   {signatureData.matches.map((match) => (
                     <TableRow key={match.id}>
-                      <TableCell className="font-medium">{match.fileName}</TableCell>
+                      <TableCell className="font-medium">
+                        {match.fileName}
+                      </TableCell>
                       <TableCell>{match.matchedOn}</TableCell>
                       <TableCell>{match.taskId}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm" asChild>
-                          <a href={`/tasks/history/${match.taskId}`}>View Task</a>
+                          <a href={`/tasks/history/${match.taskId}`}>
+                            View Task
+                          </a>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -304,5 +352,5 @@ export default function SignatureDetailsPage({ params }: { params: { id: string 
         </TabsContent>
       </Tabs>
     </DashboardLayout>
-  )
+  );
 }

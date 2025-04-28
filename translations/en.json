@@ -113,7 +113,9 @@
     "analyzing": "Analyzing",
     "completed": "Completed",
     "failed": "Failed",
-    "delete": "Delete"
+    "delete": "Delete",
+    "create":"Create new task",
+    "reported":"reported"
   },
   "virtualMachines": {
     "title": "Virtual Machines",

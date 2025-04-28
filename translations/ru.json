@@ -65,6 +65,7 @@
     "incidentDistribution": "Распределение инцидентов"
   },
   "tasks": {
+    "create":"Создать новую задачу",
     "title": "Задачи",
     "activeTitle": "Активные задачи",
     "historyTitle": "История задач",

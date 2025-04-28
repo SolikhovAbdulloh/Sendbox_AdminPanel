@@ -1,16 +1,27 @@
-"use client"
+"use client";
 
-import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DataTablePaginationProps {
-  currentPage: number
-  totalPages: number
-  pageSize: number
-  totalItems: number
-  onPageChange: (page: number) => void
-  onPageSizeChange: (size: number) => void
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
 }
 
 export function DataTablePagination({
@@ -21,15 +32,17 @@ export function DataTablePagination({
   onPageChange,
   onPageSizeChange,
 }: DataTablePaginationProps) {
-  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1
-  const endItem = Math.min(currentPage * pageSize, totalItems)
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
     <div className="flex items-center justify-between px-2 py-4">
       <div className="flex-1 text-sm text-muted-foreground">
         {totalItems > 0 ? (
           <p>
-            Showing <span className="font-medium">{startItem}</span> to <span className="font-medium">{endItem}</span>
+            Showing pagesize:{pageSize} totalsize{totalItems}currentpage:{currentPage}totalpage:{totalPages}
+            <span className="font-medium">{startItem}</span> to{" "}
+            <span className="font-medium">{endItem}</span>
             of <span className="font-medium">{totalItems}</span> items
           </p>
         ) : (
@@ -39,7 +52,10 @@ export function DataTablePagination({
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Items per page</p>
-          <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(Number(value))}>
+          <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => onPageSizeChange(Number(value))}
+          >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pageSize.toString()} />
             </SelectTrigger>
@@ -99,5 +115,5 @@ export function DataTablePagination({
         </div>
       </div>
     </div>
-  )
+  );
 }
