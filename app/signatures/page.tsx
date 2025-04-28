@@ -75,7 +75,6 @@ export default function SignaturesPage() {
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
   const currentItems = filteredSignatures.slice(startIndex, endIndex);
-  console.log(currentItems);
 
   const getStatusColor = (status: string) => {
     switch (status) {

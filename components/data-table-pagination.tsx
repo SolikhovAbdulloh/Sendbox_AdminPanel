@@ -29,7 +29,7 @@ export function DataTablePagination({
       <div className="flex-1 text-sm text-muted-foreground">
         {totalItems > 0 ? (
           <p>
-            Showing <span className="font-medium">{startItem}</span> to <span className="font-medium">{endItem}</span>{" "}
+            Showing <span className="font-medium">{startItem}</span> to <span className="font-medium">{endItem}</span>
             of <span className="font-medium">{totalItems}</span> items
           </p>
         ) : (
@@ -44,7 +44,7 @@ export function DataTablePagination({
               <SelectValue placeholder={pageSize.toString()} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 25, 50, 100].map((size) => (
+              {[10, 25, 50].map((size) => (
                 <SelectItem key={size} value={size.toString()}>
                   {size}
                 </SelectItem>

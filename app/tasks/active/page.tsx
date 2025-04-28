@@ -111,11 +111,11 @@ export default function ActiveTasksPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Running":
+      case "running":
         return "bg-green-500";
-      case "Pending":
+      case "pending":
         return "bg-yellow-500";
-      case "Analyzing":
+      case "analyzing":
         return "bg-blue-500";
       default:
         return "bg-gray-500";
@@ -347,6 +347,7 @@ export default function ActiveTasksPage() {
           </Table>
 
           {/* Pagination */}
+
           <DataTablePagination
             currentPage={validCurrentPage}
             totalPages={totalPages}

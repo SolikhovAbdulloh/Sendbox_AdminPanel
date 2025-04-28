@@ -1,7 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useAxios } from "../../useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Router } from "next/router";
 
 const useLogin = () => {
   const axios = useAxios();
