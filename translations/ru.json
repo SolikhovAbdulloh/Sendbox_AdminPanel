@@ -65,7 +65,7 @@
     "incidentDistribution": "Распределение инцидентов"
   },
   "tasks": {
-    "create":"Создать новую задачу",
+    "create": "Создать новую задачу",
     "title": "Задачи",
     "activeTitle": "Активные задачи",
     "historyTitle": "История задач",
@@ -113,7 +113,8 @@
     "pending": "Ожидает",
     "analyzing": "Анализируется",
     "completed": "Завершено",
-    "failed": "Не удалось"
+    "failed": "Не удалось",
+    "reported": "сообщил"
   },
   "virtualMachines": {
     "title": "Виртуальные машины",
