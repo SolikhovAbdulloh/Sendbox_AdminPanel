@@ -130,7 +130,7 @@ export default function TaskHistoryPage() {
     switch (status) {
       case "reported":
         return "bg-green-500";
-      case "unknown":
+      case "Failed":
         return "bg-red-500";
       default:
         return "bg-gray-500";
