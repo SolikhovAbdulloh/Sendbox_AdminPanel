@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, MoreHorizontal, Plus, Search, Trash } from "lucide-react";
+import {  Eye, MoreHorizontal, Plus, Search, Trash } from "lucide-react";
 import Link from "next/link";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { useQueryApi } from "@/share/hook/useQuery";
@@ -50,7 +50,7 @@ export default function SignaturesPage() {
     signatures: Signature[];
     total: number;
   }>({
-    url: `/1/cape/tasks/signatures?page=${currentPage}&limit=${pageSize}`,
+    url: `/1/cape/tasks/signatures?page=1&limit=100`,
     pathname: "signatures",
   });
 

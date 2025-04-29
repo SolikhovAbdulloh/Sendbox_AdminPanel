@@ -46,7 +46,7 @@ export default function ActiveTasksPage() {
 
   // Fetch data using useQueryApi
   const { data, isLoading, isError } = useQueryApi({
-    url: `/1/cape/tasks/list/active?page=${currentPage}&limit=${pageSize}&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
+    url: `/1/cape/tasks/list/active?page=1&limit=20&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
     pathname: "tasks",
   });
   if (isLoading) {
@@ -77,7 +77,7 @@ export default function ActiveTasksPage() {
   });
 
   // Calculate pagination
-  const totalItems = data.totalItems || filteredTasks.length; // Use API-provided total if available
+  const totalItems = data?.totalItems || filteredTasks.length; // Use API-provided total if available
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   // Ensure current page is valid

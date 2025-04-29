@@ -120,7 +120,7 @@ export default function LoginPage() {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? t("Loading...") : "SignIn"}
+                {isPending ? t("Loading...") : t("auth.signIn")}
               </Button>
             </div>
           </form>

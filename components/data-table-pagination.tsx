@@ -40,10 +40,10 @@ export function DataTablePagination({
       <div className="flex-1 text-sm text-muted-foreground">
         {totalItems > 0 ? (
           <p>
-            Showing pagesize:{pageSize} totalsize{totalItems}currentpage:{currentPage}totalpage:{totalPages}
-            <span className="font-medium">{startItem}</span> to{" "}
-            <span className="font-medium">{endItem}</span>
-            of <span className="font-medium">{totalItems}</span> items
+            Showing
+            <span className="font-medium"> {startItem} </span> to
+            <span className="font-medium"> {endItem} </span>
+            of <span className="font-medium"> {totalItems} </span> items
           </p>
         ) : (
           <p>No items</p>

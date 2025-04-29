@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useUserStore } from "@/app/store";
 
 export function Header() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export function Header() {
     localStorage.removeItem("token");
     router.push("/login");
   };
-
+  const { avatar } = useUserStore();
   return (
     <header className="flex h-16 items-center justify-between border-b px-4 md:px-6">
       <div className="flex items-center gap-4">
@@ -91,16 +92,12 @@ export function Header() {
             {t("common.newTask")}
           </Link>
         </Button>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
-          <span className="sr-only">{t("common.notifications")}</span>
-        </Button>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/admin-avatar.jpg" alt="Admin" />
+                <AvatarImage src={avatar} alt="Admin" />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
             </Button>

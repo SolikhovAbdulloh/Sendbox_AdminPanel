@@ -80,7 +80,7 @@
     "status": "Holati",
     "actions": "Harakatlar",
     "searchPlaceholder": "Vazifalarni qidirish...",
-    "noTasksFound": "Filtrlaringizga mos vazifalar topilmadi. Qidiruv parametrlarini yoki filtrlarni o'zgartirishga harakat qiling.",
+    "noTasksFound": "Filtirlaringizga mos vazifalar topilmadi. Qidiruv parametrlarini yoki filtrlarni o'zgartirishga harakat qiling.",
     "fileUpload": "Fayl yuklash",
     "urlInput": "URL kiritish",
     "uploadFile": "Tahlil uchun fayl yuklash",
