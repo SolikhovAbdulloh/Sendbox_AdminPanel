@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Download, ExternalLink } from "lucide-react";
-import Image from "next/image";
-import React from "react";
-
+import { ArrowLeft, Download, ExternalLink, X } from "lucide-react";
+import React, { useState } from "react";
+import { useQueryApi } from "@/share/hook/useQuery";
+import * as Dialog from "@radix-ui/react-dialog";
+import { get } from "lodash";
+// import get from 'lodash/get'
 // Sample data for task details
 const taskDetails = {
   id: "TASK-0997",
@@ -111,26 +113,34 @@ export default function TaskDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const router = useRouter();
+  const [selectedImage, setSelectedImage] = useState(null);
   const { id: taskId } = React.use(params);
+  const {data} = useQueryApi({url:`1/cape/tasks/get/screenshot/${taskId}`,pathname:'screenphotos'})
+  const {data:Taskinfo,isLoading} = useQueryApi({url:`1/cape/tasks/get/report/${taskId}`,pathname:'taskInformation'})
+    console.log(Taskinfo);
+    
   return (
     <DashboardLayout>
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-xl font-semibold">Task Details: {taskId}</h1>
-          <Badge className="bg-green-500 ml-2">{taskDetails.status}</Badge>
-        </div>
-        <Button>
-          <Download className="mr-2 h-4 w-4" />
-          Download Report
-        </Button>
-      </div>
+      
+         <div className="mb-4 flex items-center justify-between">
+         <div className="flex items-center gap-2">
+           <Button variant="outline" size="icon" onClick={() => router.back()}>
+             <ArrowLeft className="h-4 w-4" />
+           </Button>
+           <h1 className="text-xl font-semibold">Task Details: {taskId}</h1>
+           <Badge className="bg-green-500 ml-2"> {get(Taskinfo, 'info.machine.status', '123')}</Badge>
+         </div>
+         <Button>
+           <Download className="mr-2 h-4 w-4" />
+           Download Report
+         </Button>
+       </div>
+      
+     
 
       <Card>
         <CardHeader>
-          <CardTitle>Analysis Results for {taskDetails.fileName}</CardTitle>
+          <CardTitle>Analysis Results for </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="analysis">
@@ -151,29 +161,29 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium w-1/4">
                       Category
                     </TableCell>
-                    <TableCell>{taskDetails.analysisInfo.category}</TableCell>
+                    <TableCell>{get(Taskinfo, 'info.category', 'null')}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Package</TableCell>
-                    <TableCell>{taskDetails.analysisInfo.package}</TableCell>
+                    <TableCell>{get(Taskinfo, 'info.package', 'null')}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Started</TableCell>
-                    <TableCell>{taskDetails.analysisInfo.started}</TableCell>
+                    <TableCell>{get(Taskinfo, 'info.started', 'null')}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Completed</TableCell>
-                    <TableCell>{taskDetails.analysisInfo.completed}</TableCell>
+                    <TableCell>{get(Taskinfo, 'info.ended', 'null')}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Duration</TableCell>
-                    <TableCell>{taskDetails.analysisInfo.duration}</TableCell>
+                    <TableCell>{get(Taskinfo, 'info.duration', 'null')}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Options</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5">
-                        {taskDetails.analysisInfo.options}
+                      {get(Taskinfo, 'info.options.isolated', 'null')}
                       </code>
                     </TableCell>
                   </TableRow>
@@ -181,16 +191,17 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">Log(s)</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        {taskDetails.analysisInfo.logs.map((log) => (
+                       
                           <Button
-                            key={log}
+                          
                             variant="link"
                             className="h-auto p-0 justify-start"
                           >
                             <Download className="mr-1 h-3 w-3" />
-                            {log}
+                              {get(Taskinfo, 'degab.log', 'null')}
+                            
                           </Button>
-                        ))}
+                      
                       </div>
                     </TableCell>
                   </TableRow>
@@ -204,23 +215,36 @@ export default function TaskDetailsPage({
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium w-1/4">Name</TableCell>
-                    <TableCell>{taskDetails.machineInfo.name}</TableCell>
+                    <TableCell>   
+                    {get(Taskinfo, 'target.file.name', 'null')}
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">OS</TableCell>
-                    <TableCell>{taskDetails.machineInfo.os}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'info.machine.platform', 'null')}
+
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Manager</TableCell>
-                    <TableCell>{taskDetails.machineInfo.manager}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'info.machine.manager', 'null')}
+
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Started On</TableCell>
-                    <TableCell>{taskDetails.machineInfo.startedOn}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'info.machine.started_on', 'null')}
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Shutdown On</TableCell>
-                    <TableCell>{taskDetails.machineInfo.shutdownOn}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'info.machine.shutdown_on', 'null')}
+
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -234,21 +258,30 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium w-1/4">
                       File Name
                     </TableCell>
-                    <TableCell>{taskDetails.fileDetails.fileName}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'target.file.name', 'null')}
+
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">File Type</TableCell>
-                    <TableCell>{taskDetails.fileDetails.fileType}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'target.file.type', 'null')}
+
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">File Size</TableCell>
-                    <TableCell>{taskDetails.fileDetails.fileSize}</TableCell>
+                    <TableCell>
+                    {get(Taskinfo, 'target.file.size', 'null')} bytes
+
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">MD5</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {taskDetails.fileDetails.md5}
+                      {get(Taskinfo, 'target.file.md5', 'null')} 
                       </code>
                     </TableCell>
                   </TableRow>
@@ -256,7 +289,7 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">SHA1</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {taskDetails.fileDetails.sha1}
+                      {get(Taskinfo, 'target.file.sha1', 'null')} 
                       </code>
                     </TableCell>
                   </TableRow>
@@ -265,7 +298,7 @@ export default function TaskDetailsPage({
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                          {taskDetails.fileDetails.sha256}
+                        {get(Taskinfo, 'target.file.sha256', 'null')} 
                         </code>
                         <Button
                           variant="ghost"
@@ -301,7 +334,8 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">SHA3-384</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {taskDetails.fileDetails.sha3_384}
+                      {get(Taskinfo, 'target.file.sha3_384', 'null')} 
+
                       </code>
                     </TableCell>
                   </TableRow>
@@ -309,7 +343,8 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">CRC32</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {taskDetails.fileDetails.crc32}
+                      {get(Taskinfo, 'target.file.crc32','null')} 
+
                       </code>
                     </TableCell>
                   </TableRow>
@@ -317,7 +352,8 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">TLSH</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {taskDetails.fileDetails.tlsh}
+                      {get(Taskinfo, 'target.file.tlsh','null')} 
+
                       </code>
                     </TableCell>
                   </TableRow>
@@ -325,12 +361,15 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">Ssdeep</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {taskDetails.fileDetails.ssdeep}
+                      {get(Taskinfo, 'target.file.ssdeep','null')} 
+
                       </code>
                     </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
+              
+          
             </TabsContent>
 
             {/* Signatures Tab */}
@@ -338,29 +377,28 @@ export default function TaskDetailsPage({
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Detected Behaviors</h3>
                 <ul className="list-disc pl-5 space-y-1">
-                  {taskDetails.signatures.map((signature, index) => (
-                    <li key={index} className="text-sm">
-                      {signature}
-                    </li>
-                  ))}
+                {get(Taskinfo, 'signatures[0].description','null')} 
+                  
                 </ul>
               </div>
             </TabsContent>
 
             {/* Screenshots Tab */}
-            <TabsContent value="screenshots" className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {taskDetails.screenshots.map((screenshot, index) => (
+            <TabsContent value="screenshots" className="mt-6  ">
+              <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(330px,1fr))]" >
+                {data?.map((screenshot:any, index:number) => (
+                  
                   <div
                     key={index}
-                    className="border rounded-md overflow-hidden"
-                  >
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={screenshot || "/placeholder.svg"}
+                    className="border rounded-md overflow-hidden w-[300px] h-[230px]"
+                    onClick={() => setSelectedImage(screenshot)}
+                 >
+                    <div className="relative cursor-pointer">
+                      <img
+                        src={'http://localhost:4000' + screenshot || "/placeholder.svg"}
                         alt={`Screenshot ${index + 1}`}
-                        fill
-                        className="object-contain"
+                        
+                        className="object-contain bg-[green]"
                       />
                     </div>
                     <div className="p-2 bg-muted">
@@ -371,9 +409,31 @@ export default function TaskDetailsPage({
                   </div>
                 ))}
               </div>
-            </TabsContent>
-
-            {/* Summary Tab */}
+          <Dialog.Root open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+          <Dialog.Portal>
+             <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
+                <Dialog.Content className="fixed inset-0 z-50 flex items-center justify-center">
+                 <div className="relative w-full max-w-4xl max-h-[90vh] overflow-auto">
+                 <Dialog.Title className="text-xl font-semibold mb-2">
+                  Image Preview
+                </Dialog.Title>
+               <img
+                 src={ 'http://localhost:4000'+ selectedImage || ""}
+                 alt="Zoomed Screenshot"
+                 width={1200}
+                 height={800}
+                 className="rounded-lg object-contain"/>
+             </div>
+             <Dialog.Close asChild>
+              <button aria-label="close" className="absolute top-3 right-5 rounded-full p-4 bg-black/70 text-white hover:bg-black transition">
+                <X size={25}/>
+              </button>
+             </Dialog.Close>
+               </Dialog.Content>
+           </Dialog.Portal>
+       </Dialog.Root>
+    </TabsContent>
+           
             <TabsContent value="summary" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">

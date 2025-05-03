@@ -60,7 +60,7 @@ export function DataTablePagination({
               <SelectValue placeholder={pageSize.toString()} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 25, 50].map((size) => (
+              {[10, 25, 50,100].map((size) => (
                 <SelectItem key={size} value={size.toString()}>
                   {size}
                 </SelectItem>

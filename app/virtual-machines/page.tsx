@@ -24,6 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Edit, Eye, MoreHorizontal, Plus, Search } from "lucide-react";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { useQueryApi } from "@/share/hook/useQuery";
 
 // Sample data for virtual machines
 const virtualMachines = [
@@ -93,19 +94,18 @@ const virtualMachines = [
 
 export default function VirtualMachinesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-
+  const {data} = useQueryApi({url:'1/cape/machines/list',pathname:'virtual-machines'})
+  
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
-  const filteredVMs = virtualMachines.filter(
-    (vm) =>
-      vm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vm.osType.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const Items = data?.data ?? [];
+  const filteredVMs = Items.filter(
+    (vm:any) =>
+      vm.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   // Calculate pagination
-  const totalItems = filteredVMs.length;
+  const totalItems = filteredVMs?.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   // Ensure current page is valid after filtering or changing page size
@@ -117,7 +117,7 @@ export default function VirtualMachinesPage() {
   // Get current page items
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
-  const currentItems = filteredVMs.slice(startIndex, endIndex);
+  const currentItems = filteredVMs?.slice(startIndex, endIndex);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -180,19 +180,19 @@ export default function VirtualMachinesPage() {
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((vm, idx) => (
+                currentItems.map((vm:any, idx:any) => (
                   <TableRow key={vm.id}>
                     <TableCell className="font-medium">{idx + 1}</TableCell>
                     <TableCell className="font-medium">{vm.name}</TableCell>
-                    <TableCell>{vm.osType}</TableCell>
+                    <TableCell>{`${vm.platform + vm.arch}`}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(vm.status)}>
                         {vm.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{vm.ipAddress}</TableCell>
-                    <TableCell>{vm.createdDate}</TableCell>
-                    <TableCell>{vm.lastUsed}</TableCell>
+                    <TableCell>{vm.ip}</TableCell>
+                    <TableCell>{vm.locked_changed_on}</TableCell>
+                    <TableCell>{vm.status_changed_on}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

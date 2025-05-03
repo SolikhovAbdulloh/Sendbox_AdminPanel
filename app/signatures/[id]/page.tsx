@@ -80,7 +80,6 @@ const signatureData = {
     },
   ],
 };
-
 export default function SignatureDetailsPage({
   params,
 }: {
@@ -88,7 +87,7 @@ export default function SignatureDetailsPage({
 }) {
   const router = useRouter();
   const { id: signatureId } = React.use(params);
-
+  
   const [isEditing, setIsEditing] = useState(false);
   const [signatureName, setSignatureName] = useState(signatureData.name);
   const [signatureType, setSignatureType] = useState(signatureData.type);
@@ -122,7 +121,8 @@ export default function SignatureDetailsPage({
         return "bg-yellow-500";
     }
   };
-
+ 
+  
   return (
     <DashboardLayout>
       <div className="mb-4 flex items-center justify-between">

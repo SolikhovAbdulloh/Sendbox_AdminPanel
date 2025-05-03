@@ -59,7 +59,7 @@ export default function DashboardPage() {
               <CheckSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8</div>
+              <div className="text-2xl font-bold">1</div>
             </CardContent>
           </Card>
           <Card>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">2</div>
+              <div className="text-2xl font-bold">0</div>
             </CardContent>
           </Card>
           <Card>
