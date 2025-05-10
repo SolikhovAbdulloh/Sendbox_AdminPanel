@@ -1,7 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useAxios } from "../../useAxios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { setToken } from "@/share/utils/auth";
+import Cookies from "js-cookie";
 const useLogin = () => {
   const axios = useAxios();
   const router = useRouter();
@@ -11,9 +12,16 @@ const useLogin = () => {
 
     onSuccess: async (response) => {
       if (response.status === "success") {
-        localStorage.setItem("token", response.token);
+        setToken(response.token);
         router.push("/dashboard");
       }
+      const { token } = response;
+      Cookies.set("token", token, {
+        expires: 1,
+        path: "/",
+        secure: true,
+        sameSite: "strict"
+      });
     },
 
     onError: (err) => {
@@ -21,6 +29,135 @@ const useLogin = () => {
     },
   });
 };
+
+const userRegister = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn:async (data:object) => await axios({url: "/1/auth/register", method: "POST",body:data}),
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
+const userDelete = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn:async (id:string | any) => await axios({url: `/1/auth/delete-user/{id}?id=${id}`, method: 'DELETE',body:{id:id}}),
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
+
+const userDeactive = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn:async (id:string | any) => await axios({url: `/1/auth/deactivate?id=${id}`, method: 'PUT',body:{id:id}}),
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
+const userActive = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn:async (id:string | any) => await axios({url: `/1/auth/activate?id=${id}`, method: 'PUT',body:{id:id}}),
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
+
+const userDeactiveSignature = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn:async (id:string | any) => await axios({url: `/1/signature/deactivate?id=${id}`, method: 'PUT',body:{id:id}}),
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['signatures']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
+const useractiveSignature = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn:async (id:string | any) => await axios({url: `/1/signature/activate?id=${id}`, method: 'PUT',body:{id:id}}),
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['signatures']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
+
+const useResetPassword = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: object) => {
+      await axios({
+        url: "/1/auth/reset-password",
+        method: "PUT",
+        body: data,
+      });
+    },
+    onSuccess:()=>{
+      console.log("success");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users']})
+      },
+    onError:(err) => {
+      console.log(err.message);
+    }
+  })
+}
 
 const useCreateFile = () => {
   const axios = useAxios();
@@ -55,12 +192,12 @@ const useCreateFile = () => {
   });
 };
 
-const useUploadSignature = () => {
+  const useUploadSignature = () => {
   const axios = useAxios();
   return useMutation({
     mutationFn: async (data: object) => {
       await axios({
-        url: "/1/cape/tasks/upload/signature",
+        url: "/1/signature/tasks/upload/signature",
         method: "POST",
         body: data,
       });
@@ -74,4 +211,31 @@ const useUploadSignature = () => {
   });
 };
 
-export { useLogin, useCreateFile, useUploadSignature };
+const useUptadeProfile = () => {
+  const axios = useAxios();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: object) => {
+      await axios({
+        url: "/1/auth/update-profile",
+        method: "PUT",
+        body: data,
+        headers:{
+            "Content-Type": "multipart/form-data", 
+        }
+      });
+    },
+    onSuccess: (res) => {
+      console.log(res);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["userInformation"],
+      });
+    },
+    onError: (err) => {
+      console.log(err.message);
+    },
+  }); 
+}
+export { useLogin,useResetPassword,useUptadeProfile, useCreateFile, useUploadSignature , userRegister,userDelete,userDeactive,userActive,userDeactiveSignature,useractiveSignature};

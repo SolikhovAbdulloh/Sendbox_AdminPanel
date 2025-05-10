@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useUserStore } from "@/app/store";
+import { remove } from "@/share/utils/auth";
 
 export function Header() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export function Header() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    remove()
     router.push("/login");
   };
   const { avatar } = useUserStore();

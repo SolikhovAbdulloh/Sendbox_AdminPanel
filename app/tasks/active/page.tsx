@@ -28,6 +28,7 @@ import { DataTablePagination } from "@/components/data-table-pagination";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { useQueryApi } from "@/share/hook/useQuery";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Available statuses, types, and incident types for filtering
 const statuses = ["All", "Running", "Pending", "Analyzing"];
@@ -43,12 +44,28 @@ export default function ActiveTasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1");
+  const router = useRouter();
+
 
   // Fetch data using useQueryApi
-  const { data, isLoading, isError } = useQueryApi({
-    url: `/1/cape/tasks/list/active?page=1&limit=20&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
+  const { data, isLoading } = useQueryApi({
+    url: `/1/cape/tasks/list/active?page=${page}&limit=20&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
     pathname: "tasks",
   });
+  const handleNextPage = () => {
+    const params = new URLSearchParams(searchParams);
+    const currentPage = parseInt(params.get("page") || "1");
+    params.set("page", String(currentPage >= 7 ? 1  : currentPage + 1));
+    router.push(`?${params.toString()}`);
+  };
+  const handleBackPage = () => {
+    const params = new URLSearchParams(searchParams);
+    const currentPage = parseInt(params.get("page") || "1");
+    params.set("page", String(currentPage == 1 ? 1 : currentPage - 1));
+    router.push(`?${params.toString()}`);
+  };
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -337,6 +354,8 @@ export default function ActiveTasksPage() {
             pageSize={pageSize}
             totalItems={totalItems}
             onPageChange={handlePageChange}
+            nextpage={handleNextPage}
+            backpage={handleBackPage}
             onPageSizeChange={handlePageSizeChange}
           />
         </CardContent>

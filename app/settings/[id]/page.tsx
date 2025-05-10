@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 
 import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
@@ -19,37 +19,89 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Save } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import { useUserStore } from "@/app/store";
+import { useQueryApi } from "@/share/hook/useQuery";
+import {
+  useResetPassword,
+  useUptadeProfile,
+} from "@/share/hook/useQuery/useQueryAction";
 
-export default function ProfileSettingsPage() {
+export default function ProfileSettingsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { t } = useLanguage();
-  const [fullName, setFullName] = useState("Admin User");
-  const [email, setEmail] = useState("admin@sectorsandbox.com");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const { setAvatar, avatar } = useUserStore();
-  const handleProfileSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Profile updated successfully!");
-  };
+  const { mutate: uptade } = useUptadeProfile();
+  const { id } = React.use(params);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would update the password
-    alert("Password updated successfully!");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+
+    // Validate that newPassword and confirmPassword match
+    if (newPassword !== confirmPassword) {
+      alert("New password and confirm password do not match!");
+      return;
+    }
+
+    // Call mutate to send currentPassword and newPassword
+    mutate(
+      {
+        userId: id,
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      },
+      {
+        onSuccess: () => {
+          alert("Password updated successfully!");
+          // Clear password fields
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        },
+        onError: (error) => {
+          alert("Failed to update password: " + error.message);
+        },
+      }
+    );
   };
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
       setAvatar(url);
+      setProfilePhoto(file);
     }
   };
+  const { data } = useQueryApi({
+    url: `/1/auth/user?id=${id}`,
+    pathname: "userInformation",
+  });
 
+  const handleProfileSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    uptade(
+      {
+        userId: id,
+        username: data?.username || "",
+        fullName,
+        email,
+        profilePhoto: profilePhoto || undefined,
+      },
+      {
+        onSuccess: () => {
+          alert("Profile updated successfully!");
+        },
+      }
+    );
+  };
+  const { mutate } = useResetPassword();
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -64,7 +116,10 @@ export default function ProfileSettingsPage() {
             <CardContent className="space-y-6">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={avatar} alt="Avatar" />
+                  <AvatarImage
+                    src={`http://127.0.0.1:4000/${data?.profilePicture}`}
+                    alt="Avatar"
+                  />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div>
@@ -89,6 +144,7 @@ export default function ProfileSettingsPage() {
                 </Label>
                 <Input
                   id="full-name"
+                  placeholder={data?.fullName}
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                 />
@@ -99,6 +155,7 @@ export default function ProfileSettingsPage() {
                 <Input
                   id="email"
                   type="email"
+                  placeholder={data?.email}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -129,7 +186,7 @@ export default function ProfileSettingsPage() {
                 <Input
                   id="current-password"
                   type="password"
-                  value={currentPassword}
+                  value={currentPassword ?? ""}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                 />
               </div>
@@ -141,7 +198,7 @@ export default function ProfileSettingsPage() {
                 <Input
                   id="new-password"
                   type="password"
-                  value={newPassword}
+                  value={newPassword ?? ""}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
               </div>

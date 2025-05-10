@@ -20,12 +20,16 @@ interface DataTablePaginationProps {
   totalPages: number;
   pageSize: number;
   totalItems: number;
+  nextpage?: () => void;
+  backpage?: () => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
 }
 
 export function DataTablePagination({
   currentPage,
+  nextpage,
+  backpage,
   totalPages,
   pageSize,
   totalItems,
@@ -60,7 +64,7 @@ export function DataTablePagination({
               <SelectValue placeholder={pageSize.toString()} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 25, 50,100].map((size) => (
+              {[10, 25, 50, 100].map((size) => (
                 <SelectItem key={size} value={size.toString()}>
                   {size}
                 </SelectItem>
@@ -68,15 +72,17 @@ export function DataTablePagination({
             </SelectContent>
           </Select>
         </div>
+
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Page {currentPage} of {totalPages}
         </div>
+
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => onPageChange(1)}
+            onClick={() => onPageChange(1 + 1)}
             disabled={currentPage === 1}
           >
             <span className="sr-only">Go to first page</span>
@@ -111,6 +117,12 @@ export function DataTablePagination({
           >
             <span className="sr-only">Go to last page</span>
             <ChevronsRightIcon className="h-4 w-4" />
+          </Button>
+          <Button variant="default" className="h-8" onClick={backpage}>
+            Back 
+          </Button>
+          <Button variant="default" className="h-8" onClick={nextpage}>
+            Next 
           </Button>
         </div>
       </div>

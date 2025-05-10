@@ -26,6 +26,7 @@ import { Globe } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLogin } from "@/share/hook/useQuery/useQueryAction";
 import { useRouter } from "next/navigation";
+import { getToken} from "@/share/utils/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,15 +34,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const { language, setLanguage, t } = useLanguage();
   const { mutate, isPending } = useLogin();
-  const [token, setToken] = useState<string | null>(null);
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     mutate({ password, username });
   };
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
-  }, []);
+  
+    const token = getToken();
+  
 
   useEffect(() => {
     if (token) {

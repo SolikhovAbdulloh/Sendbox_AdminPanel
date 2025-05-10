@@ -11,8 +11,6 @@ import React, { useState } from "react";
 import { useQueryApi } from "@/share/hook/useQuery";
 import * as Dialog from "@radix-ui/react-dialog";
 import { get } from "lodash";
-// import get from 'lodash/get'
-// Sample data for task details
 const taskDetails = {
   id: "TASK-0997",
   fileName: "hello.zip",
@@ -117,7 +115,6 @@ export default function TaskDetailsPage({
   const { id: taskId } = React.use(params);
   const {data} = useQueryApi({url:`1/cape/tasks/get/screenshot/${taskId}`,pathname:'screenphotos'})
   const {data:Taskinfo,isLoading} = useQueryApi({url:`1/cape/tasks/get/report/${taskId}`,pathname:'taskInformation'})
-    console.log(Taskinfo);
     
   return (
     <DashboardLayout>

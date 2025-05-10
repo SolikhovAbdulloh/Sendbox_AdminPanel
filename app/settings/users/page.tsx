@@ -41,69 +41,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useQueryApi } from "@/share/hook/useQuery";
+import { useLanguage } from "@/contexts/language-context";
+import {
+  userActive,
+  userDeactive,
+  userDelete,
+  userRegister,
+} from "@/share/hook/useQuery/useQueryAction";
+import Link from "next/link";
 
 // Sample data for users
-const users = [
-  {
-    id: "USER-001",
-    fullName: "John Doe",
-    username: "john.doe",
-    email: "john.doe@example.com",
-    role: "Administrator",
-    lastLogin: "2023-04-15 14:32:10",
-    status: "Active",
-  },
-  {
-    id: "USER-002",
-    fullName: "Jane Smith",
-    username: "jane.smith",
-    email: "jane.smith@example.com",
-    role: "Administrator",
-    lastLogin: "2023-04-14 10:15:22",
-    status: "Active",
-  },
-  {
-    id: "USER-003",
-    fullName: "Mike Johnson",
-    username: "mike.johnson",
-    email: "mike.johnson@example.com",
-    role: "Analyst",
-    lastLogin: "2023-04-13 09:45:30",
-    status: "Active",
-  },
-  {
-    id: "USER-004",
-    fullName: "Sarah Williams",
-    username: "sarah.williams",
-    email: "sarah.williams@example.com",
-    role: "Analyst",
-    lastLogin: "2023-04-10 16:20:15",
-    status: "Inactive",
-  },
-  {
-    id: "USER-005",
-    fullName: "David Brown",
-    username: "david.brown",
-    email: "david.brown@example.com",
-    role: "Administrator",
-    lastLogin: "2023-04-12 11:10:45",
-    status: "Active",
-  },
-];
 
 export default function UsersPage() {
+  interface Users {
+    email: string;
+    fullName: string;
+    id: string;
+    lastLogin: string;
+    role: string;
+    status: string;
+    username: string;
+  }
+  const { t } = useLanguage();
+  const { data, isLoading } = useQueryApi({
+    url: "/1/auth/users?page=1&limit=10",
+    pathname: "users",
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  const [newUser, setNewUser] = useState({
-    fullName: "",
-    username: "",
-    email: "",
-    password: "",
-    role: "Analyst",
-  });
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [fullName, setFullname] = useState<string>("");
 
-  const filteredUsers = users.filter(
-    (user) =>
+  const Userinformation = data || [];
+  const filteredUsers = Userinformation.filter(
+    (user: Users) =>
       user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -111,113 +85,166 @@ export default function UsersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Active":
+      case "active":
         return "bg-green-500";
-      case "Inactive":
+      case "inactive":
         return "bg-gray-500";
       default:
         return "bg-yellow-500";
     }
   };
-
+  const { mutate: UserDelete, isPending: pending } = userDelete();
+  const Deleteuser = (id: string) => {
+    UserDelete(id);
+  };
+  const { mutate, isPending } = userRegister();
+  const { mutate: active, isPending: activePanding } = userActive();
+  const { mutate: deactive, isPending: deactivePending } = userDeactive();
   const handleAddUser = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would add the user to the database
-    setIsAddUserOpen(false);
-    // Reset form
-    setNewUser({
-      fullName: "",
-      username: "",
-      email: "",
-      password: "",
-      role: "Analyst",
-    });
+    mutate(
+      {
+        username: username,
+        fullName: fullName,
+        email: email,
+        password: password,
+      },
+      {
+        onSuccess: () => {
+          setIsAddUserOpen(false);
+          setUsername("");
+          setFullname("");
+          setEmail("");
+          setPassword("");
+        },
+        onError: () => {
+          setIsAddUserOpen(true);
+        },
+      }
+    );
   };
+  function Active(id: string) {
+    active(id);
+  }
+  function Deactive(id: string) {
+    deactive(id);
+  }
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("tasks.activeTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-10">{t("common.loading")}</div>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>User Management</CardTitle>
-            <CardDescription>Manage administrator accounts</CardDescription>
+            <CardTitle>{t("settings.users.title")}</CardTitle>
+            <CardDescription>{t("settings.users.description")}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search users..."
+                placeholder={t("settings.users.searchPlaceholder")}
                 className="w-64 pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
+            <Dialog
+              open={isAddUserOpen}
+              onOpenChange={(open) => {
+                setIsAddUserOpen(open);
+                if (!open) {
+                  setUsername("");
+                  setFullname("");
+                  setEmail("");
+                  setPassword("");
+                }
+              }}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <UserPlus className="mr-2 h-4 w-4" />
-                  Add User
+                  {t("settings.users.addUser")}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add New User</DialogTitle>
+                  <DialogTitle>{t("settings.users.addUserTitle")}</DialogTitle>
                   <DialogDescription>
-                    Create a new administrator account.
+                    {t("settings.users.addUserDescription")}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleAddUser}>
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="fullName">Full Name</Label>
+                      <Label htmlFor="fullName">
+                        {t("settings.users.fullName")}
+                      </Label>
                       <Input
                         id="fullName"
-                        value={newUser.fullName}
-                        onChange={(e) =>
-                          setNewUser({ ...newUser, fullName: e.target.value })
-                        }
+                        placeholder="Full Name"
+                        value={fullName}
+                        onChange={(e) => setFullname(e.target.value)}
                         required
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="username">Username</Label>
+                      <Label htmlFor="username">
+                        {t("settings.users.username")}
+                      </Label>
                       <Input
                         id="username"
-                        value={newUser.username}
-                        onChange={(e) =>
-                          setNewUser({ ...newUser, username: e.target.value })
-                        }
+                        value={username}
+                        placeholder="Username"
+                        type="text"
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{t("settings.users.email")}</Label>
                       <Input
                         id="email"
                         type="email"
-                        value={newUser.email}
-                        onChange={(e) =>
-                          setNewUser({ ...newUser, email: e.target.value })
-                        }
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password">
+                        {t("settings.users.password")}
+                      </Label>
                       <Input
                         id="password"
                         type="password"
-                        value={newUser.password}
-                        onChange={(e) =>
-                          setNewUser({ ...newUser, password: e.target.value })
-                        }
+                        value={password}
+                        placeholder="Password"
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                       />
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit">Add User</Button>
+                    <Button type="submit">
+                      {isPending ? "loading..." : "Add User"}
+                    </Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
@@ -229,19 +256,21 @@ export default function UsersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>No</TableHead>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Last Login</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead> {t("settings.users.fullName")}</TableHead>
+                <TableHead>{t("settings.users.username")}</TableHead>
+                <TableHead>{t("settings.users.email")}</TableHead>
+                <TableHead>{t("settings.users.role")}</TableHead>
+                <TableHead>{t("settings.users.lastLogin")}</TableHead>
+                <TableHead>{t("settings.users.status")}</TableHead>
+                <TableHead className="text-right">
+                  {t("settings.users.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user, idx) => (
+              {filteredUsers.map((user: Users, idx: number) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{idx+1}</TableCell>
+                  <TableCell className="font-medium">{idx + 1}</TableCell>
                   <TableCell className="font-medium">{user.fullName}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.email}</TableCell>
@@ -263,20 +292,37 @@ export default function UsersPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
-                        {user.status === "Active" ? (
-                          <DropdownMenuItem>Deactivate</DropdownMenuItem>
+                        {user.status === "active" ? (
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => Deactive(user.id)}
+                          >
+                            {activePanding ? "loading" : "Deactivate"}
+                          </DropdownMenuItem>
                         ) : (
-                          <DropdownMenuItem>Activate</DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => Active(user.id)}
+                          >
+                            {deactivePending ? "loading " : "Activate"}
+                          </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem>Reset Password</DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer">
+                          <Link href={`/settings/${user.id}`}>
+                            Reset Password
+                          </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuItem
+                          onClick={() => Deleteuser(user.id)}
+                          className="text-red-600 cursor-pointer"
+                        >
                           <Trash className="mr-2 h-4 w-4" />
-                          Delete
+                          {pending ? "loading" : "delete"}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

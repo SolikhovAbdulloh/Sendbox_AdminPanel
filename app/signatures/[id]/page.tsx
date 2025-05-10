@@ -19,110 +19,75 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
-  TableBody,
-  TableCell,
+  // TableBody,
+  // TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Download, Save, X } from "lucide-react";
+import { useQueryApi } from "@/share/hook/useQuery";
+import { useLanguage } from "@/contexts/language-context";
 
-const signatureData = {
-  id: "SIG-001",
-  name: "Ransomware Detection",
-  type: "YARA",
-  createdBy: "John Doe",
-  createdDate: "2023-01-15",
-  lastModified: "2023-04-10 14:32:10",
-  status: "Active",
-  description: "Detects common ransomware behaviors and patterns",
-  code: `rule RansomwareDetection {
-    meta:
-        description = "Detects common ransomware behaviors"
-        author = "John Doe"
-        date = "2023-01-15"
-        version = "1.0"
-    
-    strings:
-        $encrypt_func1 = "CryptEncrypt"
-        $encrypt_func2 = "EVP_EncryptUpdate"
-        $encrypt_func3 = "NtEncryptKey"
-        $ransom_note1 = "Your files have been encrypted" nocase
-        $ransom_note2 = "pay the ransom" nocase
-        $ransom_note3 = "bitcoin" nocase
-        $file_ext1 = ".encrypted"
-        $file_ext2 = ".locked"
-        $file_ext3 = ".crypted"
-    
-    condition:
-        (any of ($encrypt_func*)) and
-        (any of ($ransom_note*)) and
-        (any of ($file_ext*))
-}`,
-  matches: [
-    {
-      id: "MATCH-001",
-      fileName: "suspicious_file.exe",
-      matchedOn: "2023-04-10 14:32:10",
-      taskId: "TASK-0997",
-    },
-    {
-      id: "MATCH-002",
-      fileName: "malware_sample.bin",
-      matchedOn: "2023-04-11 11:10:45",
-      taskId: "TASK-0996",
-    },
-    {
-      id: "MATCH-003",
-      fileName: "trojan.js",
-      matchedOn: "2023-04-14 18:15:40",
-      taskId: "TASK-0999",
-    },
-  ],
-};
+
 export default function SignatureDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const router = useRouter();
   const { id: signatureId } = React.use(params);
+  const { data, isLoading } = useQueryApi({
+    url: `/1/signature/signature/${signatureId}`,
+    pathname: "signatureById",
+  });
+  const router = useRouter();
+  const { t } = useLanguage();
   
   const [isEditing, setIsEditing] = useState(false);
-  const [signatureName, setSignatureName] = useState(signatureData.name);
-  const [signatureType, setSignatureType] = useState(signatureData.type);
+  const [signatureName, setSignatureName] = useState(data?.name);
+  const [signatureType, setSignatureType] = useState(data?.category);
   const [signatureDescription, setSignatureDescription] = useState(
-    signatureData.description
+    data?.description
   );
-  const [signatureCode, setSignatureCode] = useState(signatureData.code);
+  const [signatureCode, setSignatureCode] = useState(data?.rule);
+
 
   const handleSave = () => {
     setIsEditing(false);
-    // Show success message
     alert("Signature updated successfully!");
   };
 
   const handleCancel = () => {
     // Reset form values to original data
-    setSignatureName(signatureData.name);
-    setSignatureType(signatureData.type);
-    setSignatureDescription(signatureData.description);
-    setSignatureCode(signatureData.code);
+    setSignatureName(data?.name);
+    setSignatureType(data?.category);
+    setSignatureDescription(data?.description);
+    setSignatureCode(data?.rule);
     setIsEditing(false);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Active":
+      case "active":
         return "bg-green-500";
-      case "Inactive":
+      case "inactive":
         return "bg-gray-500";
       default:
         return "bg-yellow-500";
     }
   };
- 
-  
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <Card>
+          <CardContent>
+            <div className="text-center py-10">{t("common.loading")}</div>
+          </CardContent>
+        </Card>
+      </DashboardLayout>
+    );
+  }
   return (
     <DashboardLayout>
       <div className="mb-4 flex items-center justify-between">
@@ -133,8 +98,8 @@ export default function SignatureDetailsPage({
           <h1 className="text-xl font-semibold">
             Signature Details: {signatureId}
           </h1>
-          <Badge className={getStatusColor(signatureData.status)}>
-            {signatureData.status}
+          <Badge className={getStatusColor(data?.status)}>
+            {data?.status}
           </Badge>
         </div>
         <div className="flex gap-2">
@@ -187,7 +152,7 @@ export default function SignatureDetailsPage({
                     />
                   ) : (
                     <div className="p-2 border rounded-md bg-muted/30">
-                      {signatureData.name}
+                      {data.name}
                     </div>
                   )}
                 </div>
@@ -211,7 +176,7 @@ export default function SignatureDetailsPage({
                     </Select>
                   ) : (
                     <div className="p-2 border rounded-md bg-muted/30">
-                      {signatureData.type}
+                      {data.category}
                     </div>
                   )}
                 </div>
@@ -228,7 +193,7 @@ export default function SignatureDetailsPage({
                   />
                 ) : (
                   <div className="p-2 border rounded-md bg-muted/30">
-                    {signatureData.description}
+                    {!data.description && 'null' }
                   </div>
                 )}
               </div>
@@ -238,7 +203,7 @@ export default function SignatureDetailsPage({
                 {isEditing ? (
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                      {signatureCode.split("\n").map((_, i) => (
+                      {data?.rule?.split("\n").map((_:any, i:string) => (
                         <div
                           key={i}
                           className="h-6 flex items-center justify-center"
@@ -259,7 +224,7 @@ export default function SignatureDetailsPage({
                 ) : (
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                      {signatureData.code.split("\n").map((_, i) => (
+                      {data.rule.split("\n").map((_:any, i:string) => (
                         <div
                           key={i}
                           className="h-6 flex items-center justify-center"
@@ -272,7 +237,7 @@ export default function SignatureDetailsPage({
                       className="font-mono text-sm overflow-auto h-96 pl-12 pr-4 py-2 bg-muted/30 m-0"
                       style={{ lineHeight: "1.5rem" }}
                     >
-                      {signatureData.code}
+                      {data?.rule}
                     </pre>
                   </div>
                 )}
@@ -282,29 +247,29 @@ export default function SignatureDetailsPage({
                 <div className="grid gap-3">
                   <Label>Created By</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    {signatureData.createdBy}
+                    {data?.uploadedBy}
                   </div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Created Date</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    {signatureData.createdDate}
+                    {data?.uploadedAt}
                   </div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Last Modified</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    {signatureData.lastModified}
+                    {data.lastModifiedAt}
                   </div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Status</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    <Badge className={getStatusColor(signatureData.status)}>
-                      {signatureData.status}
+                    <Badge className={getStatusColor(data?.status)}>
+                      {data.status}
                     </Badge>
                   </div>
                 </div>
@@ -328,7 +293,7 @@ export default function SignatureDetailsPage({
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                {/* <TableBody>
                   {signatureData.matches.map((match) => (
                     <TableRow key={match.id}>
                       <TableCell className="font-medium">
@@ -345,7 +310,7 @@ export default function SignatureDetailsPage({
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
+                </TableBody> */}
               </Table>
             </CardContent>
           </Card>

@@ -1,3 +1,4 @@
+import { getToken } from "@/share/utils/auth";
 import axios from "axios";
 
 const api = axios.create({
@@ -9,7 +10,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    let token = localStorage.getItem("token");
+    let token = getToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

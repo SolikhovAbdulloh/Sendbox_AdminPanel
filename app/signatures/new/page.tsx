@@ -44,7 +44,6 @@ export default function NewSignaturePage() {
     type: signatureType,
     rule: signatureCode,
   };
-  console.log(payload);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
