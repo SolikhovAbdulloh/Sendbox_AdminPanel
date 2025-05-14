@@ -1,9 +1,16 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import { ClipboardList, FileSignature, Home, Laptop, Settings, Shield } from "lucide-react"
-import { useLanguage } from "@/contexts/language-context"
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  ClipboardList,
+  FileSignature,
+  Home,
+  Laptop,
+  Settings,
+  Shield,
+} from "lucide-react";
+import { useLanguage } from "@/contexts/language-context";
 
 import {
   Sidebar,
@@ -19,19 +26,24 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useQueryApi } from "@/share/hook/useQuery";
 
 export function AppSidebar() {
-  const pathname = usePathname()
-  const { t } = useLanguage()
+  const pathname = usePathname();
+  const { t } = useLanguage();
 
   const isActive = (path: string) => {
-    return pathname === path
-  }
+    return pathname === path;
+  };
 
   const isSubActive = (paths: string[]) => {
-    return paths.some((path) => pathname.startsWith(path))
-  }
+    return paths.some((path) => pathname.startsWith(path));
+  };
+  const { data } = useQueryApi({
+    url: `/1/auth/user`,
+    pathname: "role",
+  });
 
   return (
     <Sidebar>
@@ -45,7 +57,9 @@ export function AppSidebar() {
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Sector Sandbox</span>
-                  <span className="text-xs text-muted-foreground">Admin Panel</span>
+                  <span className="text-xs text-muted-foreground">
+                    Admin Panel
+                  </span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -75,17 +89,30 @@ export function AppSidebar() {
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/tasks/active")}>
-                      <Link href="/tasks/active">{t("common.activeTasks")}</Link>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/tasks/active")}
+                    >
+                      <Link href="/tasks/active">
+                        {t("common.activeTasks")}
+                      </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/tasks/history")}>
-                      <Link href="/tasks/history">{t("common.tasksHistory")}</Link>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/tasks/history")}
+                    >
+                      <Link href="/tasks/history">
+                        {t("common.tasksHistory")}
+                      </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/tasks/new")}>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/tasks/new")}
+                    >
                       <Link href="/tasks/new">{t("common.newTask")}</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
@@ -93,7 +120,10 @@ export function AppSidebar() {
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isActive("/virtual-machines")}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/virtual-machines")}
+                >
                   <Link href="/virtual-machines">
                     <Laptop className="size-4" />
                     <span>{t("common.virtualMachines")}</span>
@@ -102,7 +132,10 @@ export function AppSidebar() {
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isSubActive(["/signatures"])}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isSubActive(["/signatures"])}
+                >
                   <Link href="/signatures">
                     <FileSignature className="size-4" />
                     <span>{t("common.signatures")}</span>
@@ -110,20 +143,31 @@ export function AppSidebar() {
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/signatures")}>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/signatures")}
+                    >
                       <Link href="/signatures">{t("common.signatures")}</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/signatures/new")}>
-                      <Link href="/signatures/new">{`${t("common.newTask")} ${t("common.signatures")}`}</Link>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/signatures/new")}
+                    >
+                      <Link href="/signatures/new">{`${t("common.newTask")} ${t(
+                        "common.signatures"
+                      )}`}</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 </SidebarMenuSub>
               </SidebarMenuItem>
 
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={isSubActive(["/settings"])}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isSubActive(["/settings"])}
+                >
                   <Link href="/settings">
                     <Settings className="size-4" />
                     <span>{t("common.settings")}</span>
@@ -131,18 +175,33 @@ export function AppSidebar() {
                 </SidebarMenuButton>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/settings/profile")}>
-                      <Link href="/settings/profile">{t("common.profile")}</Link>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/settings/profile")}
+                    >
+                      <Link href="/settings/profile">
+                        {t("common.profile")}
+                      </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
+                  {data?.roleId == 1 && (
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={isActive("/settings/users")}
+                      >
+                        <Link href="/settings/users">{t("common.users")}</Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  )}
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/settings/users")}>
-                      <Link href="/settings/users">{t("common.users")}</Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton asChild isActive={isActive("/settings/licenses")}>
-                      <Link href="/settings/licenses">{t("common.licenses")}</Link>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={isActive("/settings/licenses")}
+                    >
+                      <Link href="/settings/licenses">
+                        {t("common.licenses")}
+                      </Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 </SidebarMenuSub>
@@ -153,5 +212,5 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

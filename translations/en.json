@@ -115,6 +115,7 @@
     "failed": "Failed",
     "delete": "Delete",
     "create":"Create new task",
+    "processing":"Processing",
     "reported":"reported"
   },
   "virtualMachines": {
@@ -135,6 +136,7 @@
     "stop": "Stop"
   },
   "signatures": {
+    "create":"Create new Signature",
     "title": "Signatures",
     "newTitle": "New Signature",
     "detailsTitle": "Signature Details",
@@ -150,7 +152,7 @@
     "uploadSignature": "Upload Signature File",
     "dragDropSignature": "Drag and drop your signature file here or click to browse",
     "supportsSignatureTypes": "Supports YARA (.yar, .yara), Suricata (.rules, .rule), and Regex (.regex, .txt) files",
-    "signatureName": "Signature Name",
+    "v": "Signature Name",
     "signatureNamePlaceholder": "Enter signature name",
     "signatureType": "Signature Type",
     "selectSignatureType": "Select signature type",

@@ -130,6 +130,7 @@ export default function UsersPage() {
     deactive(id);
   }
 
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -292,10 +293,11 @@ export default function UsersPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="cursor-pointer">
+
+                        {/* <DropdownMenuItem className="cursor-pointer">
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         {user.status === "active" ? (
                           <DropdownMenuItem
                             className="cursor-pointer"
@@ -316,6 +318,7 @@ export default function UsersPage() {
                             Reset Password
                           </Link>
                         </DropdownMenuItem>
+
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => Deleteuser(user.id)}

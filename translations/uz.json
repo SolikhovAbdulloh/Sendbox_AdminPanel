@@ -99,6 +99,7 @@
     "priority": "Ustuvorlik",
     "low": "Past",
     "medium": "O'rta",
+    "processing": "Qayta ishlash",
     "high": "Yuqori",
     "preExecutionScript": "Bajarishdan oldingi Python skripti (ixtiyoriy)",
     "duringExecutionScript": "Bajarish paytidagi Python skripti (ixtiyoriy)",
@@ -135,6 +136,7 @@
   },
   "signatures": {
     "title": "Imzolar",
+    "create": "Yangi imzo yarating",
     "newTitle": "Yangi imzo",
     "detailsTitle": "Imzo tafsilotlari",
     "name": "Nomi",

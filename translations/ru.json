@@ -114,6 +114,7 @@
     "analyzing": "Анализируется",
     "completed": "Завершено",
     "failed": "Не удалось",
+    "processing": "Обработка",
     "reported": "сообщил"
   },
   "virtualMachines": {
@@ -135,6 +136,7 @@
   },
   "signatures": {
     "title": "Сигнатуры",
+    "create": "Создать новую сигнатуру",
     "newTitle": "Новая сигнатура",
     "detailsTitle": "Детали сигнатуры",
     "name": "Имя",

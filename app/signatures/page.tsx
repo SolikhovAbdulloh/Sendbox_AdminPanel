@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
 import {
   Table,
   TableBody,
@@ -22,54 +23,86 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, MoreHorizontal, Plus, Search, Trash } from "lucide-react";
+import { Edit, Eye, MoreHorizontal, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useLanguage } from "@/contexts/language-context";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  useEditSignature,
   useractiveSignature,
   userDeactiveSignature,
 } from "@/share/hook/useQuery/useQueryAction";
+import { useForm } from "react-hook-form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label"; // Label komponentini import qilish
+import { useQueryClient } from "@tanstack/react-query";
 
-// Sample data for signatures
+// Interfeyslar
+interface Signature {
+  id: string;
+  rule: string;
+  name: string;
+  type: string;
+  uploadedBy: { username: string };
+  createdAt: string;
+  lastModifiedAt: string;
+  status: "active" | "inactive" | "pending";
+}
+
+interface FormData {
+  name: string;
+  rule: string;
+  type: string;
+}
+const schema = z.object({
+  name: z.string().min(3, { message: "Name is too short" }),
+  rule: z.string().min(3, { message: "Rule is required" }),
+  type: z.string().min(3, { message: "Type is required" }),
+});
 
 export default function SignaturesPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editSignature, setEditSignature] = useState<{ id: string } | null>(
+    null
+  );
+  const queryClient = useQueryClient();
+
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const page = parseInt(searchParams.get("page") || "1");
-  const { data, isLoading } = useQueryApi<{}>({
-    url: `/1/signature/all?page=${page}&limit=100`,
+
+  const { data, isLoading } = useQueryApi<Signature[]>({
+    url: `/1/signature/all?page=${currentPage}&limit=${pageSize}`,
     pathname: "signatures",
   });
 
-  const filteredSignatures = data?.filter(
-    (sig: any) =>
-      sig?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sig?.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sig?.createdBy?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
-  // Calculate pagination
-  const totalItems = filteredSignatures?.length || [];
+  const totalItems = data?.length || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
-  // Ensure current page is valid after filtering or changing page size
-  const validCurrentPage = Math.min(currentPage, totalPages);
-  if (validCurrentPage !== currentPage) {
-    setCurrentPage(validCurrentPage);
-  }
-
-  // Get current page items
-  const startIndex = (validCurrentPage - 1) * pageSize;
-  const endIndex = Math.min(startIndex + pageSize, totalItems);
-  const currentItems = filteredSignatures?.slice(startIndex, endIndex) || [];
-
+  const currentItems = data || [];
+  const filteredUsers = currentItems.filter((user: any) =>
+    user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const { mutate, isPending } = useEditSignature();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -83,40 +116,70 @@ export default function SignaturesPage() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-  };
-  const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
-    const currentPage = parseInt(params.get("page") || "1");
-    params.set("page", String(currentPage >= 7 ? 1  : currentPage + 1));
+    params.set("page", String(page));
     router.push(`?${params.toString()}`);
   };
-  const handleBackPage = () => {
-    const params = new URLSearchParams(searchParams);
-    const currentPage = parseInt(params.get("page") || "1");
-    params.set("page", String(currentPage == 1 ? 1 : currentPage - 1));
-    router.push(`?${params.toString()}`);
-  };
+
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
-
-    setCurrentPage(1); // Reset to first page when page size changes
+    setCurrentPage(1);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
+    router.push(`?${params.toString()}`);
   };
-  const { mutate: Deactivate, isPending: DeactivatePanding } =
+
+  // const handleEditClick = (sig: Signature) => {
+  //   setEditSignature({ id: sig.id });
+  //   reset({
+  //     name: sig.name,
+  //     type: sig.type,
+  //     rule: sig.rule,
+  //   });
+  //   setIsModalOpen(true);
+  // };
+
+  const onSubmit = (data: FormData) => {
+    if (editSignature?.id) {
+      mutate(
+        {
+          id: editSignature.id,
+          data: {
+            name: data.name,
+            rule: data.rule,
+            type: data.type,
+          },
+        },
+        {
+          onSuccess: () => {
+            setIsModalOpen(false);
+            reset();
+            queryClient.invalidateQueries({ queryKey: ["signatures"] });
+          },
+          onError: (error) => {
+            console.error("Error updating signature:", error);
+          },
+        }
+      );
+    }
+  };
+
+  const { mutate: deactivate, isPending: deactivatePending } =
     userDeactiveSignature();
-  const { mutate: activate, isPending: ActivatePanding } =
+  const { mutate: activate, isPending: activatePending } =
     useractiveSignature();
-  function Active(id: string) {
-    activate(id);
-  }
-  function Deactive(id: string) {
-    Deactivate(id);
-  }
+
+  const { data: role } = useQueryApi<{ roleId: number }>({
+    url: `/1/auth/user`,
+    pathname: "role",
+  });
+
   if (isLoading) {
     return (
       <DashboardLayout>
         <Card>
           <CardHeader>
-            <CardTitle>{t("tasks.historyTitle")}</CardTitle>
+            <CardTitle>{t("signatures.title")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-10">{t("common.loading")}</div>
@@ -125,6 +188,7 @@ export default function SignaturesPage() {
       </DashboardLayout>
     );
   }
+
   return (
     <DashboardLayout>
       <Card>
@@ -140,7 +204,10 @@ export default function SignaturesPage() {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setCurrentPage(1); // Reset to first page when search changes
+                  setCurrentPage(1);
+                  const params = new URLSearchParams(searchParams);
+                  params.set("page", "1");
+                  router.push(`?${params.toString()}`);
                 }}
               />
             </div>
@@ -169,8 +236,8 @@ export default function SignaturesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentItems.length > 0 ? (
-                currentItems.map((sig: any, index: string) => (
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((sig: any, index: string) => (
                   <TableRow key={sig.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell className="font-medium">{sig.name}</TableCell>
@@ -200,23 +267,27 @@ export default function SignaturesPage() {
                               View
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          {/* <DropdownMenuItem
+                            onClick={() => handleEditClick(sig)}
+                          >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
-                          </DropdownMenuItem>
-                          {sig.status === "active" ? (
-                            <DropdownMenuItem onClick={() => Deactive(sig.id)}>
-                              {ActivatePanding ? "loading" : "Deactivate"}
-                            </DropdownMenuItem>
-                          ) : (
-                            <DropdownMenuItem onClick={() => Active(sig.id)}>
-                              {DeactivatePanding ? "loading" : "Activate"}
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete
+                          </DropdownMenuItem> */}
+                          <DropdownMenuItem
+                            disabled={role?.roleId !== 1}
+                            onClick={() =>
+                              sig.status === "active"
+                                ? deactivate(sig.id)
+                                : activate(sig.id)
+                            }
+                          >
+                            {sig.status === "active"
+                              ? deactivatePending
+                                ? "Deactivating..."
+                                : "Deactivate"
+                              : activatePending
+                              ? "Activating..."
+                              : "Activate"}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -225,25 +296,83 @@ export default function SignaturesPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
-                    No signatures found matching your search. Try adjusting your
-                    search term.
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    No signatures found.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
 
-          {/* Pagination */}
+          {/* Tuzatilgan Modal */}
+          <Dialog
+            open={isModalOpen}
+            onOpenChange={(open) => {
+              setIsModalOpen(open);
+              if (!open) reset(); // Modal yopilganda formani tozalash
+            }}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Signature</DialogTitle>
+              </DialogHeader>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="grid gap-4 py-4"
+              >
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input id="name" {...register("name")} />
+                  {errors.name && (
+                    <p className="text-sm text-red-500">
+                      {errors.name.message}
+                    </p>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="rule">Rule</Label>
+                  <Input id="rule" {...register("rule")} />
+                  {errors.type && (
+                    <p className="text-sm text-red-500">
+                      {errors.type.message}
+                    </p>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="type">Type</Label>
+                  <Input id="type" {...register("type")} />
+                  {errors.type && (
+                    <p className="text-sm text-red-500">
+                      {errors.type.message}
+                    </p>
+                  )}
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    {isPending ? "loading..." : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+
           <DataTablePagination
-            currentPage={validCurrentPage}
+            currentPage={currentPage}
             totalPages={totalPages}
             pageSize={pageSize}
             totalItems={totalItems}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
-            nextpage={handleNextPage}
-            backpage={handleBackPage}
+            nextpage={() => handlePageChange(currentPage + 1)}
+            backpage={() => handlePageChange(currentPage - 1)}
+            aria-label="Pagination controls"
           />
         </CardContent>
       </Card>

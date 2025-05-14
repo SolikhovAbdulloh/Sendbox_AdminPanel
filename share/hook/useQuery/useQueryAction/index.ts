@@ -197,8 +197,26 @@ const useCreateFile = () => {
   return useMutation({
     mutationFn: async (data: object) => {
       await axios({
-        url: "/1/signature/tasks/upload/signature",
+        url: "/1/signature/upload/new/signature",
         method: "POST",
+        body: data,
+      });
+    },
+    onSuccess: (res) => {
+      console.log(res);
+    },
+    onError: (err) => {
+      console.log(err.message);
+    },
+  });
+};
+const useEditSignature = () => {
+  const axios = useAxios();
+  return useMutation({
+    mutationFn: async ({data,id}:{data:object,id:string}) => {
+      await axios({
+        url: `/1/signature/update/${id}`,
+        method: "PUT",
         body: data,
       });
     },
@@ -238,4 +256,4 @@ const useUptadeProfile = () => {
     },
   }); 
 }
-export { useLogin,useResetPassword,useUptadeProfile, useCreateFile, useUploadSignature , userRegister,userDelete,userDeactive,userActive,userDeactiveSignature,useractiveSignature};
+export { useLogin,useResetPassword,useUptadeProfile,useEditSignature, useCreateFile, useUploadSignature , userRegister,userDelete,userDeactive,userActive,userDeactiveSignature,useractiveSignature};

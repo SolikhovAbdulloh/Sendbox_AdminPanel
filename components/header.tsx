@@ -19,11 +19,16 @@ import { useLanguage } from "@/contexts/language-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useUserStore } from "@/app/store";
 import { remove } from "@/share/utils/auth";
+import { useQueryApi } from "@/share/hook/useQuery";
 
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
+  const { data: role } = useQueryApi({
+    url: `/1/auth/user`,
+    pathname: "role",
+  });
 
   // Get page title based on current path
   const getPageTitle = () => {
@@ -44,10 +49,10 @@ export function Header() {
   };
 
   const handleLogout = () => {
-    remove()
+    remove();
     router.push("/login");
   };
-  const { avatar } = useUserStore();
+
   return (
     <header className="flex h-16 items-center justify-between border-b px-4 md:px-6">
       <div className="flex items-center gap-4">
@@ -98,7 +103,10 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={avatar} alt="Admin" />
+                <AvatarImage
+                  src={`http://127.0.0.1:4000/${role?.profilePicture}`}
+                  alt="Admin"
+                />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
             </Button>

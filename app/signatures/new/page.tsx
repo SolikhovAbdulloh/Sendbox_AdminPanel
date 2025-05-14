@@ -26,9 +26,12 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Save, X, AlertCircle, FileUp } from "lucide-react";
 import { useUploadSignature } from "@/share/hook/useQuery/useQueryAction";
+import { useLanguage } from "@/contexts/language-context";
 
 export default function NewSignaturePage() {
   const router = useRouter();
+  const { t } = useLanguage();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [signatureName, setSignatureName] = useState("");
   const [signatureType, setSignatureType] = useState("YARA");
@@ -150,13 +153,13 @@ export default function NewSignaturePage() {
     <DashboardLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Create New Signature</CardTitle>
+          <CardTitle>{t("signatures.create")}</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             {/* File Upload Section */}
             <div className="grid gap-3">
-              <Label>Upload Signature File</Label>
+              <Label>{t("signatures.uploadSignature")}</Label>
               <div
                 className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
                   isDragging
@@ -177,11 +180,10 @@ export default function NewSignaturePage() {
                 />
                 <FileUp className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-sm font-medium mb-1">
-                  Drag and drop your signature file here or click to browse
+                  {t("signatures.dragDropSignature")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Supports YARA (.yar, .yara), Suricata (.rules, .rule), and
-                  Regex (.regex, .txt) files
+                  {t("signatures.supportsSignatureTypes")}
                 </p>
               </div>
             </div>
@@ -202,7 +204,9 @@ export default function NewSignaturePage() {
             )}
 
             <div className="grid gap-3">
-              <Label htmlFor="signature-name">Signature Name</Label>
+              <Label htmlFor="signature-name">
+                {t("signatures.signatureName")}
+              </Label>
               <Input
                 id="signature-name"
                 placeholder="Enter signature name"
@@ -213,7 +217,9 @@ export default function NewSignaturePage() {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="signature-type">Signature Type</Label>
+              <Label htmlFor="signature-type">
+                {t("signatures.signatureType")}
+              </Label>
               <Select value={signatureType} onValueChange={setSignatureType}>
                 <SelectTrigger id="signature-type">
                   <SelectValue placeholder="Select signature type" />
@@ -228,7 +234,9 @@ export default function NewSignaturePage() {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="signature-code">Rule Editor</Label>
+              <Label htmlFor="signature-code">
+                {t("signatures.ruleEditor")}
+              </Label>
               <div className="relative border rounded-md overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
                   {signatureCode.split("\n").map((_, i) => (
@@ -252,8 +260,7 @@ export default function NewSignaturePage() {
               </div>
               {signatureType === "YARA" && (
                 <p className="text-xs text-muted-foreground">
-                  Example: rule ExampleRule {`{`} strings: $a = "suspicious
-                  string" condition: $a {`}`}
+                  {t("signatures.yaraExample")}
                 </p>
               )}
             </div>

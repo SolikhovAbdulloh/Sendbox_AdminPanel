@@ -37,9 +37,9 @@ export default function ProfileSettingsPage({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
-  const { setAvatar, avatar } = useUserStore();
+  const { setAvatar } = useUserStore();
   const { mutate: uptade } = useUptadeProfile();
-  const { id } = React.use(params);
+  const { id: userId } = React.use(params);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,14 +53,13 @@ export default function ProfileSettingsPage({
     // Call mutate to send currentPassword and newPassword
     mutate(
       {
-        userId: id,
+        userId: userId,
         currentPassword: currentPassword,
         newPassword: newPassword,
       },
       {
         onSuccess: () => {
           alert("Password updated successfully!");
-          // Clear password fields
           setCurrentPassword("");
           setNewPassword("");
           setConfirmPassword("");
@@ -79,16 +78,21 @@ export default function ProfileSettingsPage({
       setProfilePhoto(file);
     }
   };
+
   const { data } = useQueryApi({
-    url: `/1/auth/user?id=${id}`,
+    url: `/1/auth/user?id=${userId !== "profile" ? userId : ""}`,
     pathname: "userInformation",
   });
-
+  const { data:role } = useQueryApi({
+    url: `/1/auth/user`,
+    pathname: "userInformation",
+  });
+  
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     uptade(
       {
-        userId: id,
+        userId: userId !== "profile" ? userId : data?.id,
         username: data?.username || "",
         fullName,
         email,
@@ -169,60 +173,63 @@ export default function ProfileSettingsPage({
             </CardFooter>
           </form>
         </Card>
+        <>
+          {role?.roleId == 1 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("settings.profile.passwordTitle")}</CardTitle>
+                <CardDescription>
+                  {t("settings.profile.passwordDescription")}
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handlePasswordSubmit}>
+                <CardContent className="space-y-6">
+                  <div className="grid gap-3">
+                    <Label htmlFor="current-password">
+                      {t("settings.profile.currentPassword")}
+                    </Label>
+                    <Input
+                      id="current-password"
+                      type="password"
+                      value={currentPassword ?? ""}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                  </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("settings.profile.passwordTitle")}</CardTitle>
-            <CardDescription>
-              {t("settings.profile.passwordDescription")}
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handlePasswordSubmit}>
-            <CardContent className="space-y-6">
-              <div className="grid gap-3">
-                <Label htmlFor="current-password">
-                  {t("settings.profile.currentPassword")}
-                </Label>
-                <Input
-                  id="current-password"
-                  type="password"
-                  value={currentPassword ?? ""}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                />
-              </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="new-password">
+                      {t("settings.profile.newPassword")}
+                    </Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={newPassword ?? ""}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                  </div>
 
-              <div className="grid gap-3">
-                <Label htmlFor="new-password">
-                  {t("settings.profile.newPassword")}
-                </Label>
-                <Input
-                  id="new-password"
-                  type="password"
-                  value={newPassword ?? ""}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="confirm-password">
-                  {t("settings.profile.confirmPassword")}
-                </Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit">
-                <Save className="mr-2 h-4 w-4" />
-                {t("settings.profile.updatePassword")}
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
+                  <div className="grid gap-3">
+                    <Label htmlFor="confirm-password">
+                      {t("settings.profile.confirmPassword")}
+                    </Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit">
+                    <Save className="mr-2 h-4 w-4" />
+                    {t("settings.profile.updatePassword")}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          )}
+        </>
       </div>
     </DashboardLayout>
   );

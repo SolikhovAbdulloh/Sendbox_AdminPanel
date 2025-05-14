@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { useAxios } from "../hook/useAxios";
 
 export interface Usertype {
   username?: string | undefined;
@@ -27,8 +28,8 @@ export const remove = () => {
   Cookies.remove("user");
 };
 
-// export const getUserInfo = async () => {
-//   const axios = useAxios();
-//   const res = await axios({ url: "/api/1/auth/user", method: "GET" });
-//   return res;
-// };
+export const getUserInfo = async () => {
+  const axios = useAxios();
+  const res = await axios({ url: "/1/auth/user", method: "GET" });
+  return res;
+};

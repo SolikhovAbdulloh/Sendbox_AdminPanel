@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
-  // TableBody,
-  // TableCell,
+  TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -28,7 +28,19 @@ import {
 import { ArrowLeft, Download, Save, X } from "lucide-react";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useLanguage } from "@/contexts/language-context";
+import { useEditSignature } from "@/share/hook/useQuery/useQueryAction";
 
+interface Signature {
+  id: string;
+  name: string;
+  category: string;
+  description: string | null;
+  rule: string;
+  status: string;
+  uploadedBy: string;
+  uploadedAt: string;
+  lastModifiedAt: string;
+}
 
 export default function SignatureDetailsPage({
   params,
@@ -36,33 +48,65 @@ export default function SignatureDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id: signatureId } = React.use(params);
-  const { data, isLoading } = useQueryApi({
+  const { data, isLoading } = useQueryApi<Signature>({
     url: `/1/signature/signature/${signatureId}`,
     pathname: "signatureById",
   });
   const router = useRouter();
   const { t } = useLanguage();
-  
+
   const [isEditing, setIsEditing] = useState(false);
-  const [signatureName, setSignatureName] = useState(data?.name);
-  const [signatureType, setSignatureType] = useState(data?.category);
-  const [signatureDescription, setSignatureDescription] = useState(
-    data?.description
-  );
-  const [signatureCode, setSignatureCode] = useState(data?.rule);
+  const [signatureName, setSignatureName] = useState("");
+  const [signatureType, setSignatureType] = useState("");
+  const [signatureCode, setSignatureCode] = useState("");
 
+  const { mutate, isPending } = useEditSignature();
 
-  const handleSave = () => {
-    setIsEditing(false);
-    alert("Signature updated successfully!");
+  // Sync state with fetched data
+  useEffect(() => {
+    if (data) {
+      setSignatureName(data.name ?? "");
+      setSignatureType(data.category ?? "");
+      setSignatureCode(data.rule ?? "");
+    }
+  }, [data]);
+  console.log({
+    id: signatureId,
+
+    type: signatureType,
+    name: signatureName,
+    rule: signatureCode,
+  });
+
+  const handleSave = async () => {
+    try {
+      await mutate(
+        {
+          id: signatureId,
+          data: {
+            type: signatureType,
+            name: signatureName,
+            rule: signatureCode,
+          },
+        },
+        {
+          onSuccess: () => {
+            alert("Signature updated successfully!");
+            router.push("/signatures");
+          },
+        }
+      );
+      setIsEditing(false);
+    } catch (error) {
+      alert("Failed to update signature. Please try again.");
+    }
   };
 
   const handleCancel = () => {
     // Reset form values to original data
-    setSignatureName(data?.name);
-    setSignatureType(data?.category);
-    setSignatureDescription(data?.description);
-    setSignatureCode(data?.rule);
+    setSignatureName(data?.name ?? "");
+    setSignatureType(data?.category ?? "");
+    setSignatureCode(data?.rule ?? "");
     setIsEditing(false);
   };
 
@@ -88,6 +132,7 @@ export default function SignatureDetailsPage({
       </DashboardLayout>
     );
   }
+
   return (
     <DashboardLayout>
       <div className="mb-4 flex items-center justify-between">
@@ -98,9 +143,7 @@ export default function SignatureDetailsPage({
           <h1 className="text-xl font-semibold">
             Signature Details: {signatureId}
           </h1>
-          <Badge className={getStatusColor(data?.status)}>
-            {data?.status}
-          </Badge>
+          <Badge className={getStatusColor(data?.status)}>{data?.status}</Badge>
         </div>
         <div className="flex gap-2">
           {!isEditing ? (
@@ -119,9 +162,9 @@ export default function SignatureDetailsPage({
                 <X className="mr-2 h-4 w-4" />
                 Cancel
               </Button>
-              <Button onClick={handleSave}>
+              <Button onClick={handleSave} disabled={isPending}>
                 <Save className="mr-2 h-4 w-4" />
-                Save Changes
+                {isPending ? "Saving..." : "Save Changes"}
               </Button>
             </>
           )}
@@ -146,13 +189,14 @@ export default function SignatureDetailsPage({
                   {isEditing ? (
                     <Input
                       id="signature-name"
+                      placeholder="Enter signature name"
                       value={signatureName}
                       onChange={(e) => setSignatureName(e.target.value)}
                       required
                     />
                   ) : (
                     <div className="p-2 border rounded-md bg-muted/30">
-                      {data.name}
+                      {data?.name}
                     </div>
                   )}
                 </div>
@@ -168,7 +212,7 @@ export default function SignatureDetailsPage({
                         <SelectValue placeholder="Select signature type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="YARA">YARA</SelectItem>
+                        <SelectItem value="yar">yar</SelectItem>
                         <SelectItem value="Regex">Regex</SelectItem>
                         <SelectItem value="Suricata">Suricata</SelectItem>
                         <SelectItem value="Custom">Custom</SelectItem>
@@ -176,13 +220,13 @@ export default function SignatureDetailsPage({
                     </Select>
                   ) : (
                     <div className="p-2 border rounded-md bg-muted/30">
-                      {data.category}
+                      {data?.category}
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="grid gap-3">
+              {/* <div className="grid gap-3">
                 <Label htmlFor="signature-description">Description</Label>
                 {isEditing ? (
                   <Textarea
@@ -193,17 +237,17 @@ export default function SignatureDetailsPage({
                   />
                 ) : (
                   <div className="p-2 border rounded-md bg-muted/30">
-                    {!data.description && 'null' }
+                    {data?.description || "No description"}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               <div className="grid gap-3">
                 <Label htmlFor="signature-code">Rule Editor</Label>
                 {isEditing ? (
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                      {data?.rule?.split("\n").map((_:any, i:string) => (
+                      {(signatureCode || "").split("\n").map((_, i) => (
                         <div
                           key={i}
                           className="h-6 flex items-center justify-center"
@@ -224,20 +268,22 @@ export default function SignatureDetailsPage({
                 ) : (
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                      {data.rule.split("\n").map((_:any, i:string) => (
-                        <div
-                          key={i}
-                          className="h-6 flex items-center justify-center"
-                        >
-                          {i + 1}
-                        </div>
-                      ))}
+                      {(data?.rule || "")
+                        .split("\n")
+                        .map((_: any, i: string) => (
+                          <div
+                            key={i}
+                            className="h-6 flex items-center justify-center"
+                          >
+                            {i + 1}
+                          </div>
+                        ))}
                     </div>
                     <pre
                       className="font-mono text-sm overflow-auto h-96 pl-12 pr-4 py-2 bg-muted/30 m-0"
                       style={{ lineHeight: "1.5rem" }}
                     >
-                      {data?.rule}
+                      {data?.rule || "No rule defined"}
                     </pre>
                   </div>
                 )}
@@ -261,7 +307,7 @@ export default function SignatureDetailsPage({
                 <div className="grid gap-3">
                   <Label>Last Modified</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    {data.lastModifiedAt}
+                    {data?.lastModifiedAt}
                   </div>
                 </div>
 
@@ -269,7 +315,7 @@ export default function SignatureDetailsPage({
                   <Label>Status</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
                     <Badge className={getStatusColor(data?.status)}>
-                      {data.status}
+                      {data?.status}
                     </Badge>
                   </div>
                 </div>
@@ -293,24 +339,14 @@ export default function SignatureDetailsPage({
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                {/* <TableBody>
-                  {signatureData.matches.map((match) => (
-                    <TableRow key={match.id}>
-                      <TableCell className="font-medium">
-                        {match.fileName}
-                      </TableCell>
-                      <TableCell>{match.matchedOn}</TableCell>
-                      <TableCell>{match.taskId}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <a href={`/tasks/history/${match.taskId}`}>
-                            View Task
-                          </a>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody> */}
+                <TableBody>
+                  {/* Placeholder: Populate with actual match data */}
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center">
+                      No matches found
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               </Table>
             </CardContent>
           </Card>
