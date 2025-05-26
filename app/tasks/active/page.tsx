@@ -29,7 +29,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
 
 // Available statuses, types, and incident types for filtering
 const statuses = ["All", "Running", "Pending", "Analyzing"];
