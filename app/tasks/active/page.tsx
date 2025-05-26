@@ -29,7 +29,13 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Dialog, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@radix-ui/react-dialog";
+import { DialogHeader } from "@/components/ui/dialog";
 
 // Available statuses, types, and incident types for filtering
 const statuses = ["All", "Running", "Pending", "Analyzing"];
@@ -334,8 +340,13 @@ export default function ActiveTasksPage() {
                           <Eye className="cursor-pointer hover:text-blue-500" />
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl h-[600px] p-0">
+                          <DialogHeader>
+                            <DialogTitle className="text-sm font-medium">
+                              Remote Desktop
+                            </DialogTitle>
+                          </DialogHeader>
                           <iframe
-                            src={`http://192.168.122.1:6080/vnc_lite.html`}
+                            src="http://192.168.122.1:6080/vnc_lite.html"
                             width="100%"
                             height="100%"
                             className="w-full h-full border-0"
