@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -29,6 +29,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 // Available statuses, types, and incident types for filtering
 const statuses = ["All", "Running", "Pending", "Analyzing"];
@@ -44,10 +45,13 @@ export default function ActiveTasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
   const router = useRouter();
-
 
   // Fetch data using useQueryApi
   const { data, isLoading } = useQueryApi({
@@ -57,7 +61,7 @@ export default function ActiveTasksPage() {
   const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
     const currentPage = parseInt(params.get("page") || "1");
-    params.set("page", String(currentPage >= 7 ? 1  : currentPage + 1));
+    params.set("page", String(currentPage >= 7 ? 1 : currentPage + 1));
     router.push(`?${params.toString()}`);
   };
   const handleBackPage = () => {
@@ -291,6 +295,7 @@ export default function ActiveTasksPage() {
                 <TableHead>{t("tasks.createdTime")}</TableHead>
                 <TableHead>{t("tasks.fileSize")}</TableHead>
                 <TableHead>{t("tasks.incidentType")}</TableHead>
+                <TableHead>{t("common.view")}</TableHead>
                 <TableHead>{t("tasks.status")}</TableHead>
                 <TableHead className="flex items-center justify-center">
                   {t("common.delete")}
@@ -322,6 +327,21 @@ export default function ActiveTasksPage() {
                       <Badge className={getIncidentColor(task.incidentType)}>
                         {task.incidentType}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Eye className="cursor-pointer hover:text-blue-500" />
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl h-[600px] p-0">
+                          <iframe
+                            src={`http://192.168.122.1:6080/vnc_lite.html`}
+                            width="100%"
+                            height="100%"
+                            className="w-full h-full border-0"
+                          />
+                        </DialogContent>
+                      </Dialog>
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(task.status)}>
