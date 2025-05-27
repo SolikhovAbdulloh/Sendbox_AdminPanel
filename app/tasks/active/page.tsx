@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, Trash2, X as CloseIcon } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,9 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { Badge } from "@/components/ui/badge";
-import { Filter, Search, X, Plus } from "lucide-react";
+import { Filter, Search, Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -34,8 +33,9 @@ import {
   DialogContent,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@radix-ui/react-dialog";
-import { DialogHeader } from "@/components/ui/dialog";
+import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
 
 // Available statuses, types, and incident types for filtering
 const statuses = ["All", "Running", "Pending", "Analyzing"];
@@ -51,10 +51,7 @@ export default function ActiveTasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [open, setOpen] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
   const router = useRouter();
@@ -64,18 +61,21 @@ export default function ActiveTasksPage() {
     url: `/1/cape/tasks/list/active?page=${page}&limit=20&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
     pathname: "tasks",
   });
+
   const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
     const currentPage = parseInt(params.get("page") || "1");
     params.set("page", String(currentPage >= 7 ? 1 : currentPage + 1));
     router.push(`?${params.toString()}`);
   };
+
   const handleBackPage = () => {
     const params = new URLSearchParams(searchParams);
     const currentPage = parseInt(params.get("page") || "1");
-    params.set("page", String(currentPage == 1 ? 1 : currentPage - 1));
+    params.set("page", String(currentPage === 1 ? 1 : currentPage - 1));
     router.push(`?${params.toString()}`);
   };
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -91,8 +91,8 @@ export default function ActiveTasksPage() {
     );
   }
 
-  // Extract tasks from data (adjust based on actual API response structure)
-  const tasks = data || []; // Assuming data.tasks is the array of tasks, or data itself is the array
+  // Extract tasks from data
+  const tasks = data || [];
 
   // Filter tasks based on search term
   const filteredTasks = tasks.filter((task: any) => {
@@ -104,7 +104,7 @@ export default function ActiveTasksPage() {
   });
 
   // Calculate pagination
-  const totalItems = data?.totalItems || filteredTasks.length; // Use API-provided total if available
+  const totalItems = data?.totalItems || filteredTasks.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   // Ensure current page is valid
@@ -117,7 +117,6 @@ export default function ActiveTasksPage() {
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
   const currentItems = filteredTasks.slice(startIndex, endIndex);
-  console.log(currentItems);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -283,7 +282,7 @@ export default function ActiveTasksPage() {
                 onClick={resetFilters}
                 className="ml-auto"
               >
-                <X className="mr-2 h-3 w-3" />
+                <CloseIcon className="mr-2 h-3 w-3" />
                 {t("common.resetFilters")}
               </Button>
             )}
@@ -302,15 +301,12 @@ export default function ActiveTasksPage() {
                 <TableHead>{t("tasks.fileSize")}</TableHead>
                 <TableHead>{t("tasks.incidentType")}</TableHead>
                 <TableHead>{t("common.view")}</TableHead>
-                <TableHead>{t("tasks.status")}</TableHead>
-                <TableHead className="flex items-center justify-center">
-                  {t("common.delete")}
-                </TableHead>
+                <TableHead>{t("common.delete")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentItems.length > 0 ? (
-                currentItems.map((task: any, index: string) => (
+                currentItems.map((task: any, index: number) => (
                   <TableRow key={task.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell className="font-medium">
@@ -323,53 +319,70 @@ export default function ActiveTasksPage() {
                       {task.sha256 ? task.sha256 : "not info"}
                     </TableCell>
                     <TableCell>
-                      {!task.startedAt ? 0 : task.startedAt}
+                      {task.startedAt ? task.startedAt : "N/A"}
                     </TableCell>
                     <TableCell>
-                      {task.completedAt ? task.completedAt : 0}
+                      {task.completedAt ? task.completedAt : "N/A"}
                     </TableCell>
-                    <TableCell>{task.fileSizeMB}</TableCell>
+                    <TableCell>{task.fileSizeMB || "N/A"}</TableCell>
                     <TableCell>
                       <Badge className={getIncidentColor(task.incidentType)}>
-                        {task.incidentType}
+                        {task.incidentType || "Unknown"}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Eye className="cursor-pointer hover:text-blue-500" />
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4 hover:text-blue-500" />
+                          </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl h-[600px] p-0">
+                        <DialogContent className="max-w-4xl w-full max-h-[80vh] p-6">
                           <DialogHeader>
-                            <DialogTitle className="text-sm font-medium">
-                              Remote Desktop
+                            <DialogTitle className="text-lg font-medium">
+                              {t("tasks.remoteDesktop")} - {task.filename}
                             </DialogTitle>
+                            <DialogClose asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-4 right-4"
+                              >
+                                <CloseIcon className="h-4 w-4" />
+                              </Button>
+                            </DialogClose>
                           </DialogHeader>
-                          <iframe
-                            src="http://192.168.122.1:6080/vnc_lite.html"
-                            width="100%"
-                            height="100%"
-                            className="w-full h-full border-0"
-                          />
+                          <div className="flex-1 overflow-hidden">
+                            <iframe
+                              src="http://192.168.122.1:6080/vnc_lite.html" // Replace with dynamic/task-specific URL if needed
+                              className="w-full h-[60vh] border-0 rounded-md"
+                              title="Remote Desktop"
+                              allowFullScreen
+                            />
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">
+                                {t("common.close")}
+                              </Button>
+                            </DialogClose>
+                          </DialogFooter>
                         </DialogContent>
                       </Dialog>
                     </TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(task.status)}>
-                        {t(`tasks.${task.status.toLowerCase()}`)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="flex items-center justify-center">
-                      <Trash2
-                        size={18}
-                        className="cursor-pointer hover:text-[red]"
-                      />
+                    <TableCell className="text-center">
+                      <Button variant="ghost" size="icon">
+                        <Trash2
+                          size={18}
+                          className="cursor-pointer hover:text-red-500"
+                        />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={9} className="h-24 text-center">
+                  <TableCell colSpan={10} className="h-24 text-center">
                     {t("tasks.noTasksFound")}
                   </TableCell>
                 </TableRow>
@@ -378,7 +391,6 @@ export default function ActiveTasksPage() {
           </Table>
 
           {/* Pagination */}
-
           <DataTablePagination
             currentPage={validCurrentPage}
             totalPages={totalPages}
