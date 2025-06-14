@@ -345,7 +345,7 @@ export default function ActiveTasksPage() {
                     <TableCell className="flex items-center justify-center">
                       <Trash2
                         size={18}
-                        className="cursor-pointer hover:text-[red]"
+                        className="cursor-pointer mt-[10px] hover:text-[red]"
                       />
                     </TableCell>
                   </TableRow>
