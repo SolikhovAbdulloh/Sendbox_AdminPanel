@@ -192,7 +192,7 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">Options</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5">
-                      {get(Taskinfo, 'info.options.isolated', 'null')}
+                      {get(Taskinfo, 'info.options.isolated', 'password')}
                       </code>
                     </TableCell>
                   </TableRow>
