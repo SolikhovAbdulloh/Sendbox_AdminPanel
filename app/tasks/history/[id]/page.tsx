@@ -207,7 +207,7 @@ export default function TaskDetailsPage({
                             className="h-auto p-0 justify-start"
                           >
                             <Download className="mr-1 h-3 w-3" />
-                              {get(Taskinfo, 'degab.log', 'null')}
+                              {get(Taskinfo, 'debug.log', 'null')}
                             
                           </Button>
                       
