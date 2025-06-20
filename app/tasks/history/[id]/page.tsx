@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import { useQueryApi } from "@/share/hook/useQuery";
 import * as Dialog from "@radix-ui/react-dialog";
 import { get } from "lodash";
+import { getApiUrl, getImageUrl } from "@/lib/api-config";
 const taskDetails = {
   id: "TASK-0997",
   fileName: "hello.zip",
@@ -116,6 +117,17 @@ export default function TaskDetailsPage({
   const {data} = useQueryApi({url:`1/cape/tasks/get/screenshot/${taskId}`,pathname:'screenphotos'})
   const {data:Taskinfo,isLoading} = useQueryApi({url:`1/cape/tasks/get/report/${taskId}`,pathname:'taskInformation'})
     
+
+  if(isLoading){
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-lg">Loading task details...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       
@@ -180,7 +192,7 @@ export default function TaskDetailsPage({
                     <TableCell className="font-medium">Options</TableCell>
                     <TableCell>
                       <code className="rounded bg-muted px-1 py-0.5">
-                      {get(Taskinfo, 'info.options.isolated', 'null')}
+                      {get(Taskinfo, 'info.options.isolated', 'password')}
                       </code>
                     </TableCell>
                   </TableRow>
@@ -381,55 +393,67 @@ export default function TaskDetailsPage({
             </TabsContent>
 
             {/* Screenshots Tab */}
-            <TabsContent value="screenshots" className="mt-6  ">
-              <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(330px,1fr))]" >
-                {data?.map((screenshot:any, index:number) => (
-                  
-                  <div
-                    key={index}
-                    className="border rounded-md overflow-hidden w-[300px] h-[230px]"
-                    onClick={() => setSelectedImage(screenshot)}
-                 >
-                    <div className="relative cursor-pointer">
-                      <img
-                        src={'http://localhost:4000' + screenshot || "/placeholder.svg"}
-                        alt={`Screenshot ${index + 1}`}
-                        
-                        className="object-contain bg-[green]"
-                      />
-                    </div>
-                    <div className="p-2 bg-muted">
-                      <p className="text-xs text-center">
-                        Screenshot {index + 1}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-          <Dialog.Root open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <Dialog.Portal>
-             <Dialog.Overlay className="fixed inset-0 bg-black/50 z-40" />
-                <Dialog.Content className="fixed inset-0 z-50 flex items-center justify-center">
-                 <div className="relative w-full max-w-4xl max-h-[90vh] overflow-auto">
-                 <Dialog.Title className="text-xl font-semibold mb-2">
-                  Image Preview
-                </Dialog.Title>
-               <img
-                 src={ 'http://localhost:4000'+ selectedImage || ""}
-                 alt="Zoomed Screenshot"
-                 width={1200}
-                 height={800}
-                 className="rounded-lg object-contain"/>
-             </div>
-             <Dialog.Close asChild>
-              <button aria-label="close" className="absolute top-3 right-5 rounded-full p-4 bg-black/70 text-white hover:bg-black transition">
-                <X size={25}/>
-              </button>
-             </Dialog.Close>
-               </Dialog.Content>
-           </Dialog.Portal>
-       </Dialog.Root>
-    </TabsContent>
+          {/* // ...existing code... */}
+<TabsContent value="screenshots" className="mt-6">
+  <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(330px,1fr))]">
+    {data?.map((screenshot: any, index: number) => (
+      <div
+        key={index}
+        className="border rounded-md overflow-hidden w-[300px] h-[230px]"
+        onClick={() => setSelectedImage(screenshot)}
+      >
+        <div className="relative cursor-pointer">
+          <img
+            src={`${getImageUrl(screenshot)}` || "/placeholder.svg"}
+            alt={`Screenshot ${index + 1}`}
+            className="object-contain bg-[green]"
+          />
+        </div>
+        <div className="p-2 bg-muted">
+          <p className="text-xs text-center">Screenshot {index + 1}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+  <Dialog.Root open={!!selectedImage} onOpenChange={(open) => {
+      if (!open) setSelectedImage(null); 
+    }}>
+    <Dialog.Portal>
+      <Dialog.Overlay
+        className="fixed inset-0 bg-black/50 z-40"
+        onClick={() => setSelectedImage(null)}
+      />
+      <Dialog.Content 
+        className="fixed inset-0 z-50 flex items-center justify-center"
+        onClick={() => setSelectedImage(null)}
+      >
+        <div 
+          className="relative w-full max-w-4xl max-h-[90vh] overflow-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Dialog.Title className="text-xl font-semibold mb-2">
+            Image Preview
+          </Dialog.Title>
+          <img
+            src={selectedImage ? getImageUrl(selectedImage) : "/placeholder.svg"}
+            alt="Zoomed Screenshot"
+            width={1200}
+            height={800}
+            className="rounded-lg object-contain"
+          />
+        </div>
+        <Dialog.Close asChild>
+          <button
+            aria-label="close"
+            className="absolute top-3 right-5 rounded-full p-4 bg-black/70 text-white hover:bg-black transition"
+          >
+            <X size={25} />
+          </button>
+        </Dialog.Close>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>
+</TabsContent>
            
             <TabsContent value="summary" className="mt-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -24,6 +24,7 @@ import {
   useResetPassword,
   useUptadeProfile,
 } from "@/share/hook/useQuery/useQueryAction";
+import { getApiUrl, getImageUrl } from "@/lib/api-config";
 
 export default function ProfileSettingsPage({
   params,
@@ -121,7 +122,7 @@ export default function ProfileSettingsPage({
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src={`http://127.0.0.1:4000/${data?.profilePicture}`}
+                    src={`${getImageUrl(data?.profilePicture)}`}
                     alt="Avatar"
                   />
                   <AvatarFallback>AD</AvatarFallback>

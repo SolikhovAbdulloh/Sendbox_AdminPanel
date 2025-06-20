@@ -20,6 +20,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useUserStore } from "@/app/store";
 import { remove } from "@/share/utils/auth";
 import { useQueryApi } from "@/share/hook/useQuery";
+import { getImageUrl } from "@/lib/api-config";
 
 export function Header() {
   const router = useRouter();
@@ -104,7 +105,7 @@ export function Header() {
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar className="h-8 w-8">
                 <AvatarImage
-                  src={`http://127.0.0.1:4000/${role?.profilePicture}`}
+                  src={`${getImageUrl(role?.profilePicture)}`}
                   alt="Admin"
                 />
                 <AvatarFallback>AD</AvatarFallback>

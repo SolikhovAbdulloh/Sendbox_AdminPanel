@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Trash2 } from "lucide-react";
+import { Trash2,Eye } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -29,6 +29,8 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useRouter, useSearchParams } from "next/navigation";
+import { size } from "lodash";
+import { IframeModal } from "@/components/iframe";
 
 // Available statuses, types, and incident types for filtering
 const statuses = ["All", "Running", "Pending", "Analyzing"];
@@ -47,13 +49,19 @@ export default function ActiveTasksPage() {
   const searchParams = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
   const router = useRouter();
-
+  const [selectViewId,setSelectViewId] = useState(null)
 
   // Fetch data using useQueryApi
   const { data, isLoading } = useQueryApi({
     url: `/1/cape/tasks/list/active?page=${page}&limit=20&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
     pathname: "tasks",
   });
+
+
+  const handleCloseIframe = () => {
+    setSelectViewId(null); 
+  };
+
   const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
     const currentPage = parseInt(params.get("page") || "1");
@@ -286,6 +294,7 @@ export default function ActiveTasksPage() {
                 <TableHead>{t("tasks.createdTime")}</TableHead>
                 <TableHead>{t("tasks.fileSize")}</TableHead>
                 <TableHead>{t("tasks.incidentType")}</TableHead>
+                <TableHead>{t("common.view")}</TableHead>
                 <TableHead>{t("tasks.status")}</TableHead>
                 <TableHead className="flex items-center justify-center">
                   {t("common.delete")}
@@ -319,6 +328,11 @@ export default function ActiveTasksPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      <Button variant='ghost' onClick={() => setSelectViewId(task.id) } size="icon">
+                       <Eye/>
+                      </Button>
+                    </TableCell>
+                    <TableCell>
                       <Badge className={getStatusColor(task.status)}>
                         {t(`tasks.${task.status.toLowerCase()}`)}
                       </Badge>
@@ -326,7 +340,7 @@ export default function ActiveTasksPage() {
                     <TableCell className="flex items-center justify-center">
                       <Trash2
                         size={18}
-                        className="cursor-pointer hover:text-[red]"
+                        className="cursor-pointer mt-[10px] hover:text-[red]"
                       />
                     </TableCell>
                   </TableRow>
@@ -340,6 +354,11 @@ export default function ActiveTasksPage() {
               )}
             </TableBody>
           </Table>
+          <IframeModal
+        isOpen={!!selectViewId} // Show modal when selectViewId is truthy
+        onClose={handleCloseIframe}
+        url="http://192.168.122.1:6080/vnc_lite.html"
+      />
 
 
           <DataTablePagination

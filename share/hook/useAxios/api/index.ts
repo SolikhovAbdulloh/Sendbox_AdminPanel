@@ -1,8 +1,13 @@
+import { getApiUrl } from "@/lib/api-config";
 import { getToken } from "@/share/utils/auth";
 import axios from "axios";
 
 const api = axios.create({
+<<<<<<< HEAD
   baseURL: "http://192.168.1.112:4000/api",
+=======
+  baseURL: getApiUrl('api'),
+>>>>>>> f8d036b7b35cd4a58ad5afc2c93c5f5bbb38b79b
   headers: {
     "Content-Type": "application/json",
   },
