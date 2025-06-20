@@ -81,10 +81,8 @@ export default function ActiveTasksPage() {
     );
   }
 
-  // Extract tasks from data (adjust based on actual API response structure)
-  const tasks = data || []; // Assuming data.tasks is the array of tasks, or data itself is the array
+  const tasks = data || [];
 
-  // Filter tasks based on search term
   const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch =
       task.filename?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,17 +91,14 @@ export default function ActiveTasksPage() {
     return matchesSearch;
   });
 
-  // Calculate pagination
-  const totalItems = data?.totalItems || filteredTasks.length; // Use API-provided total if available
+  const totalItems = data?.totalItems || filteredTasks.length; 
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  // Ensure current page is valid
   const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
     setCurrentPage(validCurrentPage);
   }
 
-  // Get current page items
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
   const currentItems = filteredTasks.slice(startIndex, endIndex);
@@ -346,7 +341,6 @@ export default function ActiveTasksPage() {
             </TableBody>
           </Table>
 
-          {/* Pagination */}
 
           <DataTablePagination
             currentPage={validCurrentPage}

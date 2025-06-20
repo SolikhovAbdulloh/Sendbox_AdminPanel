@@ -105,7 +105,6 @@ export function DataTablePagination({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages || totalPages === 0}
           >
-            <span className="sr-only">Go to next page</span>
             <ChevronRightIcon className="h-4 w-4" />
           </Button>
           <Button
@@ -118,11 +117,15 @@ export function DataTablePagination({
             <span className="sr-only">Go to last page</span>
             <ChevronsRightIcon className="h-4 w-4" />
           </Button>
-          <Button variant="default" className="h-8" onClick={backpage} disabled={currentPage == 1}>
-            Back 
+          <Button
+            variant="default"
+            className="h-8"
+            onClick={backpage}
+          >
+            Back
           </Button>
           <Button variant="default" className="h-8" onClick={nextpage}>
-            Next 
+            Next
           </Button>
         </div>
       </div>

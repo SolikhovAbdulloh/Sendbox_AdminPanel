@@ -34,8 +34,8 @@ import { cn } from "@/lib/utils";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useLanguage } from "@/contexts/language-context";
+import { useRouter, useSearchParams } from "next/navigation";
 
-// Filter options
 const taskTypes = ["All", "File", "URL"];
 const incidentTypes = ["All", "None", "Malware", "Ransomware", "Phishing"];
 const statusTypes = ["All", "Completed", "Failed"];
@@ -51,14 +51,15 @@ export default function TaskHistoryPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  // Format dates for API query
+  const page = parseInt(searchParams.get("page") || "1");
   const formatDateForApi = (date?: Date) =>
     date ? format(date, "yyyy-MM-dd") : "";
 
-  // Construct API query URL with dynamic filters and pagination (no search parameter)
   const { data, isLoading } = useQueryApi({
-    url: `/1/cape/tasks/list/history?page=${currentPage}&limit=${pageSize}&status=${
+    url: `/1/cape/tasks/list/history?page=${page}&limit=100&status=${
       statusFilter === "All" ? "all" : statusFilter.toLowerCase()
     }&category=${
       typeFilter === "All" ? "all" : typeFilter.toLowerCase()
@@ -69,8 +70,18 @@ export default function TaskHistoryPage() {
     }`,
     pathname: "history",
   });
-
-  // Handle loading state
+  const handleNextPage = () => {
+    const params = new URLSearchParams(searchParams);
+    const currentPage = parseInt(params.get("page") || "1");
+    params.set("page", String(currentPage >= 7 ? 1 : currentPage + 1));
+    router.push(`?${params.toString()}`);
+  };
+  const handleBackPage = () => {
+    const params = new URLSearchParams(searchParams);
+    const currentPage = parseInt(params.get("page") || "1");
+    params.set("page", String(currentPage == 1 ? 1 : currentPage - 1));
+    router.push(`?${params.toString()}`);
+  };
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -86,7 +97,6 @@ export default function TaskHistoryPage() {
     );
   }
 
-  // Extract tasks and pagination metadata from API response
   const tasks = data || [];
   const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch =
@@ -94,16 +104,14 @@ export default function TaskHistoryPage() {
       task.sha256?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
-  const totalItems = filteredTasks.length; // Use filteredTasks.length for client-side filtering
+  const totalItems = filteredTasks.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  // Ensure current page is valid
   const validCurrentPage = Math.min(currentPage, totalPages);
   if (validCurrentPage !== currentPage) {
     setCurrentPage(validCurrentPage);
   }
 
-  // Get current page items
   const startIndex = (validCurrentPage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, totalItems);
   const currentItems = filteredTasks.slice(startIndex, endIndex);
@@ -409,6 +417,8 @@ export default function TaskHistoryPage() {
             currentPage={validCurrentPage}
             totalPages={totalPages}
             pageSize={pageSize}
+            nextpage={handleNextPage}
+            backpage={handleBackPage}
             totalItems={totalItems}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}

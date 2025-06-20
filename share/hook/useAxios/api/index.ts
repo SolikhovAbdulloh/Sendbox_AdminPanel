@@ -2,7 +2,7 @@ import { getToken } from "@/share/utils/auth";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:4000/api',
+  baseURL: "http://192.168.1.112:4000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -10,7 +10,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    let token = getToken()
+    let token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
