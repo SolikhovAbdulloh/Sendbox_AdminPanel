@@ -1,8 +1,11 @@
-"use client";
+'use client';
 
-import { DashboardLayout } from "@/components/dashboard-layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckSquare, Clock, Laptop, ShieldAlert } from "lucide-react";
+import { DashboardLayout } from '@/components/dashboard-layout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { useLanguage } from '@/contexts/language-context';
+import { useQueryApi } from '@/share/hook/useQuery';
+import { CheckSquare, Clock, Laptop, ShieldAlert } from 'lucide-react';
 import {
   CartesianGrid,
   Cell,
@@ -15,14 +18,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { useLanguage } from "@/contexts/language-context";
-import { useQueryApi } from "@/share/hook/useQuery";
+} from 'recharts';
 
 // Define TypeScript interfaces for raw backend data
 interface RawTaskData {
@@ -68,40 +64,63 @@ interface DashboardData {
 }
 
 // Define COLORS for PieChart
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8", "#82CA9D", "#A4DE6C", "#D0ED57"];
+const COLORS = [
+  '#0088FE',
+  '#00C49F',
+  '#FFBB28',
+  '#FF8042',
+  '#8884D8',
+  '#82CA9D',
+  '#A4DE6C',
+  '#D0ED57',
+];
 
 export default function DashboardPage() {
   const { t } = useLanguage();
   const { data, isLoading, isError, error } = useQueryApi<DashboardData>({
-    url: "1/cape/tasks/dashboard",
-    pathname: "dashboard",
+    url: '1/cape/tasks/dashboard',
+    pathname: 'dashboard',
   });
 
+  function getDayName(dayIndex: number): { day: string; tasks: number } {
+    const days = [
+      { day: 'Mon', tasks: data.totalTasksByLastSevenDays.monday },
+      { day: 'Tue', tasks: data.totalTasksByLastSevenDays.tuesday },
+      { day: 'Wed', tasks: data.totalTasksByLastSevenDays.wednesday },
+      { day: 'Thu', tasks: data.totalTasksByLastSevenDays.thursday },
+      { day: 'Fri', tasks: data.totalTasksByLastSevenDays.friday },
+      { day: 'Sat', tasks: data.totalTasksByLastSevenDays.saturday },
+      { day: 'Sun', tasks: data.totalTasksByLastSevenDays.sunday },
+    ];
+    return days[dayIndex];
+  }
+
+  const today = new Date().getDay();
   // Transform raw taskData into array format for LineChart
   const taskData: TaskData[] = data?.totalTasksByLastSevenDays
     ? [
-        { day: "Mon", tasks: data.totalTasksByLastSevenDays.monday },
-        { day: "Tue", tasks: data.totalTasksByLastSevenDays.tuesday },
-        { day: "Wed", tasks: data.totalTasksByLastSevenDays.wednesday },
-        { day: "Thu", tasks: data.totalTasksByLastSevenDays.thursday },
-        { day: "Fri", tasks: data.totalTasksByLastSevenDays.friday },
-        { day: "Sat", tasks: data.totalTasksByLastSevenDays.saturday },
-        { day: "Sun", tasks: data.totalTasksByLastSevenDays.sunday },
+        getDayName((today + 0) % 7),
+        getDayName((today + 1) % 7),
+        getDayName((today + 2) % 7),
+        getDayName((today + 3) % 7),
+        getDayName((today + 4) % 7),
+        getDayName((today + 5) % 7),
+        getDayName((today + 6) % 7),
       ]
     : [];
 
   // Transform raw incidentData into array format for PieChart, excluding zero values
   const incidentData: IncidentData[] = data?.incidentDistribution
     ? [
-        { name: "Malware", value: data.incidentDistribution.malware },
-        { name: "Ransomware", value: data.incidentDistribution.ransomware },
-        { name: "Trojan", value: data.incidentDistribution.trojan },
-        { name: "Virus", value: data.incidentDistribution.virus },
-        { name: "Worm", value: data.incidentDistribution.worm },
-        { name: "Spyware", value: data.incidentDistribution.spyware },
-        { name: "Cryptominer", value: data.incidentDistribution.cryptominer },
-        { name: "Unknown", value: data.incidentDistribution.unknown },
-      ].filter((item) => item.value > 0) // Exclude categories with zero values
+        { name: 'Malware', value: data.incidentDistribution.malware },
+        { name: 'Ransomware', value: data.incidentDistribution.ransomware },
+        { name: 'Trojan', value: data.incidentDistribution.trojan },
+        { name: 'Virus', value: data.incidentDistribution.virus },
+        { name: 'Worm', value: data.incidentDistribution.worm },
+        { name: 'Spyware', value: data.incidentDistribution.spyware },
+        { name: 'Cryptominer', value: data.incidentDistribution.cryptominer },
+        { name: 'Unknown', value: data.incidentDistribution.unknown },
+      ].filter(item => item.value > 0) // Exclude categories with zero values
     : [];
 
   // Handle loading state
@@ -121,7 +140,7 @@ export default function DashboardPage() {
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
           <p className="text-lg text-red-500">
-            Error: {error instanceof Error ? error.message : "Failed to load data"}
+            Error: {error instanceof Error ? error.message : 'Failed to load data'}
           </p>
         </div>
       </DashboardLayout>
@@ -135,9 +154,7 @@ export default function DashboardPage() {
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {t("dashboard.totalTasks")}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.totalTasks')}</CardTitle>
               <CheckSquare className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -147,7 +164,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("dashboard.detectedIncidents")}
+                {t('dashboard.detectedIncidents')}
               </CardTitle>
               <ShieldAlert className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -157,9 +174,7 @@ export default function DashboardPage() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {t("dashboard.pendingTasks")}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">{t('dashboard.pendingTasks')}</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -169,7 +184,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                {t("dashboard.virtualMachines")}
+                {t('dashboard.virtualMachines')}
               </CardTitle>
               <Laptop className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -183,7 +198,7 @@ export default function DashboardPage() {
         <div className="grid gap-5 md:grid-cols-2">
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>{t("dashboard.tasksLastWeek")}</CardTitle>
+              <CardTitle>{t('dashboard.tasksLastWeek')}</CardTitle>
             </CardHeader>
             <CardContent className="h-[300px]">
               {taskData.length === 0 ? (
@@ -194,8 +209,8 @@ export default function DashboardPage() {
                 <ChartContainer
                   config={{
                     tasks: {
-                      label: "Tasks",
-                      color: "hsl(var(--chart-1))",
+                      label: 'Tasks',
+                      color: 'hsl(var(--chart-1))',
                     },
                   }}
                   className="h-full w-full"
@@ -204,7 +219,7 @@ export default function DashboardPage() {
                     <LineChart data={taskData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="day" />
-                      <YAxis domain={[0, Math.max(1, ...taskData.map((d) => d.tasks))]} />
+                      <YAxis domain={[0, Math.max(1, ...taskData.map(d => d.tasks))]} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Line
                         type="monotone"
@@ -222,7 +237,7 @@ export default function DashboardPage() {
 
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>{t("dashboard.incidentDistribution")}</CardTitle>
+              <CardTitle>{t('dashboard.incidentDistribution')}</CardTitle>
             </CardHeader>
             <CardContent className="h-[300px] flex items-center justify-center">
               {incidentData.length === 0 ? (
