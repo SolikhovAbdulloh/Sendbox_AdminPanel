@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.BACK_URL || 'http://localhost:8000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_BACK_URL || 'http://localhost:4000';
 
 // Image URL uchun alohida function
 export const getImageUrl = (imagePath: string) => {
