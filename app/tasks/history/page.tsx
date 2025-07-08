@@ -1,10 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -13,28 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, Eye, Filter, Search, X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import Link from "next/link";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { useQueryApi } from "@/share/hook/useQuery";
 import { useLanguage } from "@/contexts/language-context";
+import { cn } from "@/lib/utils";
+import { useQueryApi } from "@/share/hook/useQuery";
+import { format } from "date-fns";
+import { CalendarIcon, Eye, Filter, Search, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 const taskTypes = ["All", "File", "URL"];
 const incidentTypes = ["All", "None", "Malware", "Ransomware", "Phishing"];
@@ -58,7 +58,7 @@ export default function TaskHistoryPage() {
   const formatDateForApi = (date?: Date) =>
     date ? format(date, "yyyy-MM-dd") : "";
 
-  const { data, isLoading } = useQueryApi({
+  const { data, isLoading,isFetching} = useQueryApi({
     url: `/1/cape/tasks/list/history?page=${page}&limit=100&status=${
       statusFilter === "All" ? "all" : statusFilter.toLowerCase()
     }&category=${
@@ -82,7 +82,7 @@ export default function TaskHistoryPage() {
     params.set("page", String(currentPage == 1 ? 1 : currentPage - 1));
     router.push(`?${params.toString()}`);
   };
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <DashboardLayout>
         <Card>
@@ -128,7 +128,8 @@ export default function TaskHistoryPage() {
   };
 
   const getIncidentColor = (incidentType: string) => {
-    switch (incidentType) {
+    return 'bg-red-500';
+    switch (incidentType == null ? "" : incidentType) {
       case "Malware":
         return "bg-orange-500";
       case "Ransomware":
@@ -136,7 +137,7 @@ export default function TaskHistoryPage() {
       case "Phishing":
         return "bg-blue-500";
       case "None":
-        return "bg-gray-500";
+        return "bg-red-500";
       default:
         return "bg-gray-500";
     }
@@ -381,9 +382,10 @@ export default function TaskHistoryPage() {
                     <TableCell>{task.completedAt}</TableCell>
                     <TableCell>{task.fileSizeMB}</TableCell>
                     <TableCell>
-                      <Badge className={getIncidentColor(task.incidentType)}>
+                      {task.incidentType === null ? "" : <Badge className={getIncidentColor(task.incidentType)}>
                         {task.incidentType}
-                      </Badge>
+                      </Badge>}
+                     
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(task.status)}>

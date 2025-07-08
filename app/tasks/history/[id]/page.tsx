@@ -23,99 +23,25 @@ function getSeverityColor(severity: number) {
   return 'bg-gray-300 text-black';
 }
 
-const taskDetails = {
-  id: 'TASK-0997',
-  fileName: 'hello.zip',
-  status: 'Completed',
-  analysisInfo: {
-    category: 'Archive',
-    package: 'Zip',
-    started: '2023-04-12 14:05:12',
-    completed: '2023-04-12 14:10:00',
-    duration: '4m 48s',
-    options: 'timeout=120,enforce_timeout=1',
-    logs: ['cuckoo.log', 'analysis.log'],
-  },
-  machineInfo: {
-    name: 'win10x64-1',
-    os: 'Windows 10 x64',
-    manager: 'VirtualBox',
-    startedOn: '2023-04-12 14:05:15',
-    shutdownOn: '2023-04-12 14:10:00',
-  },
-  fileDetails: {
-    fileName: 'hello.zip',
-    fileType: 'Zip archive data, at least v5.1 to extract, compression method=AES Encrypted',
-    fileSize: '35701 bytes',
-    md5: 'aa19a88db99b687796502271ccd551b7',
-    sha1: '95f39105a191f0bd4ec6859a08a0e65df0dddb6a',
-    sha256: '0e63c86b93b22be65982ef9317005b319ea9bba896920d8704a538b8135a2f0b',
-    sha3_384:
-      'de2cf735507a716059c313d7ca5c526a60ca20306dcaaab19d369105e56dd43ec1bf508923fe544ac32905f793c8662d',
-    crc32: 'E2D2A769',
-    tlsh: 'T157F2F2C34A0AD11BDC9B38B0259E13A211630E271F22DC17BA7C53499E47B05EBEF15E',
-    ssdeep: '768:vwOjw68Ee5YXmi1e0BJnJx6htc0OJqli4G4Bpro0uNjZDjb14h0:viNHYXmiJx6g013Bojdu0',
-  },
-  signatures: [
-    'Checks available memory',
-    'Queries computer hostname',
-    'Attempts to connect to a dead IP:Port (1 unique times)',
-    'Queries the keyboard layout',
-    'Queries the computer locale (possible geofencing)',
-    'SetUnhandledExceptionFilter detected (possible anti-debug)',
-    'Possible date expiration check, exits too soon after checking local time',
-    'Checks system language via registry key (possible geofencing)',
-    'Resumed a thread in another process',
-    'Tries to unhook or modify Windows functions monitored by CAPE',
-    'A document or script file initiated network communications indicative of a potential exploit or payload download',
-    'Attempts to modify Microsoft Office security settings',
-    'The EQNEDT32 process established a network connection, potentially exploiting CVE-2017-11882',
-  ],
-  screenshots: [
-    '/screenshots/screenshot1.jpg',
-    '/screenshots/screenshot2.jpg',
-    '/screenshots/screenshot3.jpg',
-  ],
-  summary: {
-    accessedFiles: [
-      'C:\\Windows\\System32\\kernel32.dll',
-      'C:\\Windows\\System32\\user32.dll',
-      'C:\\Users\\Admin\\AppData\\Local\\Temp\\hello.exe',
-    ],
-    readFiles: [
-      'C:\\Windows\\System32\\config\\systemprofile\\AppData\\Local\\Microsoft\\Windows\\Temporary Internet Files\\Content.IE5\\index.dat',
-      'C:\\Windows\\System32\\drivers\\etc\\hosts',
-    ],
-    modifiedFiles: [
-      'C:\\Users\\Admin\\AppData\\Local\\Temp\\temp.dat',
-      'C:\\Users\\Admin\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\autorun.bat',
-    ],
-    deletedFiles: ['C:\\Users\\Admin\\AppData\\Local\\Temp\\~tmp0001.tmp'],
-    registryKeys: [
-      'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion',
-      'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
-    ],
-    readRegistryKeys: [
-      'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Nls\\Language',
-      'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRoot',
-    ],
-    modifiedRegistryKeys: [
-      'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\Malware',
-      'HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\Common\\Security\\Trusted',
-    ],
-    deletedRegistryKeys: [
-      'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\DeleteMe',
-    ],
-    executedCommands: [
-      'cmd.exe /c whoami',
-      'powershell.exe -ExecutionPolicy Bypass -File script.ps1',
-    ],
-    mutexes: ['Global\\MalwareMutex', 'Local\\TempMutex'],
-    startedServices: ['MalwareService', 'PersistenceService'],
-  },
-};
+
 
 export default function TaskDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+
+
+
+  const getStatusColor = (severity: number) => {
+    
+    switch (severity) {
+      case 1:   
+        return "bg-green-700";
+      case 2:
+        return "bg-yellow-500";
+      case 3:
+        return "bg-red-500";
+      
+    }
+  };
+
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(null);
   const { id: taskId } = React.use(params);
@@ -123,10 +49,11 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
     url: `1/cape/tasks/get/screenshot/${taskId}`,
     pathname: 'screenphotos',
   });
-  const { data: Taskinfo, isLoading } = useQueryApi({
+  const { data: Taskinfo, isLoading ,isFetching} = useQueryApi({
     url: `1/cape/tasks/get/report/${taskId}`,
     pathname: 'taskInformation',
   });
+  
   const downloadFile = async (taskId: string) => {
     try {
       const axios = useAxios();
@@ -134,8 +61,8 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
         url: `/1/cape/tasks/download/report/${taskId}`,
         method: 'GET',
       });
+      
 
-      // Serverdan kelgan ma'lumotni stringga aylantirish
       const jsonData = JSON.stringify(response, null, 2);
 
       const blob = new Blob([jsonData], { type: 'application/json' });
@@ -151,7 +78,28 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
       console.error('Faylni yuklab olishda xatolik:', error);
     }
   };
-  if (isLoading) {
+  const downloadLogFIle = async (taskId: string) => {
+    
+    const axios = useAxios();
+    const response = await axios({
+      url: `/1/cape/tasks/download/log/${taskId}`,
+      method: 'GET',
+    });
+
+      const jsonData = JSON.stringify(response, null, 4);
+
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `log${taskId}.log`); 
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    
+  };
+  if (isLoading || isFetching) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-screen">
@@ -231,9 +179,8 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                     <TableCell className="font-medium">Log(s)</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <Button variant="link" className="h-auto p-0 justify-start">
+                        <Button onClick={() => downloadLogFIle(taskId)} variant="link" className="h-auto p-0 justify-start">
                           <Download className="mr-1 h-3 w-3" />
-                          {get(Taskinfo, 'debug.log', 'null')}
                         </Button>
                       </div>
                     </TableCell>
@@ -368,15 +315,14 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                 <h3 className="text-lg font-medium">Detected Behaviors</h3>
                 {Array.isArray(get(Taskinfo, 'signatures', [])) &&
                 get(Taskinfo, 'signatures', []).length > 0 ? (
-                  <ul className="space-y-4">
-                    {get(Taskinfo, 'signatures', []).map((signature: any, index: number) => (
-                      <li key={index} className="border rounded-md p-4 bg-muted">
-                        <h4 className="text-md font-semibold">
+                    <ul className='space-y-2'>
+                      {get(Taskinfo, 'signatures', []).map((signature: any, index: number) => (
+                      
+                      <li key={index} className={`border rounded-md p-4 bg-muted ${getStatusColor(signature.severity)}`}>
+                        <h4 className={`text-md font-semibold ${signature.severity == 2 ? 'text-black' : "text-white"}`}>
                           {signature.name || 'Unknown Name'}
                         </h4>
-                        <p className="text-sm text-muted-foreground">
-                          {signature.description || 'No description available'}
-                        </p>
+                       
                       </li>
                     ))}
                   </ul>
@@ -458,7 +404,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Accessed Files</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.accessedFiles.map((file, index) => (
+                      {get(Taskinfo,"behavior.summary.files",[]).map((file:string, index:number | string) => (
                         <li key={index} className="text-sm font-mono break-all">
                           {file}
                         </li>
@@ -469,7 +415,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Read Files</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.readFiles.map((file, index) => (
+                      {get(Taskinfo,"behavior.summary.read_files",[]).map((file:string, index:number | string) => (
                         <li key={index} className="text-sm font-mono break-all">
                           {file}
                         </li>
@@ -477,21 +423,11 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                     </ul>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Modified Files</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.modifiedFiles.map((file, index) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Deleted Files</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.deletedFiles.map((file, index) => (
+                      {get(Taskinfo,"behavior.summary.delete_files",[]).map((file:string, index:number | string) => (
                         <li key={index} className="text-sm font-mono break-all">
                           {file}
                         </li>
@@ -502,9 +438,9 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Executed Commands</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.executedCommands.map((cmd, index) => (
+                      {get(Taskinfo,"behavior.summary.executed_commands",[]).map((file:string, index:number | string)  => (
                         <li key={index} className="text-sm font-mono break-all">
-                          {cmd}
+                          {file}
                         </li>
                       ))}
                     </ul>
@@ -515,9 +451,9 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.registryKeys.map((key, index) => (
+                      {get(Taskinfo,"behavior.summary.keys",[]).map((file:string, index:number | string)  => (
                         <li key={index} className="text-sm font-mono break-all">
-                          {key}
+                          {file}
                         </li>
                       ))}
                     </ul>
@@ -526,31 +462,22 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Read Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.readRegistryKeys.map((key, index) => (
+                      {get(Taskinfo,"behavior.summary.read_keys",[]).map((file:string, index:number | string)  => (
                         <li key={index} className="text-sm font-mono break-all">
-                          {key}
+                          {file}
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Modified Registry Keys</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.modifiedRegistryKeys.map((key, index) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {key}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+               
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Deleted Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.deletedRegistryKeys.map((key, index) => (
+                      {get(Taskinfo,"behavior.summary.delete_keys",[]).map((file:string, index:number | string)   => (
                         <li key={index} className="text-sm font-mono break-all">
-                          {key}
+                          {file}
                         </li>
                       ))}
                     </ul>
@@ -559,9 +486,9 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Mutexes</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.mutexes.map((mutex, index) => (
+                      {get(Taskinfo,"behavior.summary.mutexes",[]).map((file:string, index:number | string)=> (
                         <li key={index} className="text-sm font-mono break-all">
-                          {mutex}
+                          {file}
                         </li>
                       ))}
                     </ul>
@@ -570,9 +497,9 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Started Services</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {taskDetails.summary.startedServices.map((service, index) => (
+                      {get(Taskinfo,"behavior.started.services",[]).map((file:string, index:number | string)=> (
                         <li key={index} className="text-sm font-mono break-all">
-                          {service}
+                          {file}
                         </li>
                       ))}
                     </ul>
