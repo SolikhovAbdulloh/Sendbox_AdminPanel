@@ -10,14 +10,14 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Sector Sandbox Admin',
   description: 'Admin panel for Sector Sandbox',
-  generator: 'https://portfolio-with-next-js-rho.vercel.app/',
+  generator: 'solikhov',
   openGraph: {
     title: 'Sector Sandbox Admin',
     description: 'Powerful and modern admin panel for Sector Sandbox',
     siteName: 'Sector Sandbox',
     images: [
       {
-        url: 'https://sendboxfinaly.vercel.app/logo.png',
+        url: '/logo.png',
         width: 800,
         height: 600,
         alt: 'Sector Sandbox Admin Preview',
