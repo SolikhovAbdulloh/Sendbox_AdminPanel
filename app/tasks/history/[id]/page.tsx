@@ -324,7 +324,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                         key={index}
                         className={`border rounded-md p-4  ${getStatusColor(
                           signature.severity,
-                        )} bg-muted`}
+                        )}`}
                       >
                         <h4
                           className={`text-md font-semibold ${
