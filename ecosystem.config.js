@@ -1,19 +1,20 @@
 module.exports = {
     apps: [
       {
-        name: 'securesector', // Ilova nomi
-        script: 'npm', // Ishga tushirish uchun npm skripti
-        args: 'start', // Next.js ilovasini ishga tushirish uchun npm start
-        cwd: './', // Loyiha papkasi (agar boshqa papkada bo‘lsa, yo‘lni o‘zgartiring)
+        name: 'securesector',
+        script: 'npm',
+        args: 'start',
+        cwd: '/home/baxa/coding/front-sendbox', // Loyiha papkangizning to‘g‘ri yo‘li
         env: {
-          NODE_ENV: 'production', // Production muhiti
-          PORT: 3000 // Ilova 3000-portda ishlaydi
+          NODE_ENV: 'production',
+          PORT: 3000,
+          HOST: '0.0.0.0' // Barcha interfeyslarda eshitadi
         },
-        instances: 1, // Faqat bitta instansiya
-        exec_mode: 'fork', // Fork rejimida ishlaydi (cluster rejimi ixtiyoriy)
-        watch: false, // Fayl o‘zgarishlarini kuzatish o‘chirilgan
-        autorestart: true, // Xato yuz bersa avtomatik qayta ishga tushadi
-        max_memory_restart: '1G' // Maksimal xotira chegarasi
+        instances: 1,
+        exec_mode: 'fork',
+        watch: false,
+        autorestart: true,
+        max_memory_restart: '1G'
       }
     ]
   };
