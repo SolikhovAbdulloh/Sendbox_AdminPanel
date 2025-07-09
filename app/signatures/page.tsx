@@ -1,19 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,28 +19,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Edit, Eye, MoreHorizontal, Plus, Search } from "lucide-react";
-import Link from "next/link";
-import { DataTablePagination } from "@/components/data-table-pagination";
-import { useQueryApi } from "@/share/hook/useQuery";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label"; // Label komponentini import qilish
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useLanguage } from "@/contexts/language-context";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryApi } from "@/share/hook/useQuery";
 import {
   useEditSignature,
   useractiveSignature,
   userDeactiveSignature,
 } from "@/share/hook/useQuery/useQueryAction";
-import { useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label"; // Label komponentini import qilish
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Eye, MoreHorizontal, Plus, Search } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 // Interfeyslar
 interface Signature {
@@ -77,7 +77,8 @@ export default function SignaturesPage() {
 
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
-  const searchParams = useSearchParams();
+  const searchParams = typeof window !== 'undefined' ? useSearchParams() : new URLSearchParams();
+
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);

@@ -30,6 +30,8 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
 
 
   const getStatusColor = (severity: number) => {
+    console.log(severity);
+    
     
     switch (severity) {
       case 1:   
@@ -86,9 +88,9 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
       method: 'GET',
     });
 
-      const jsonData = JSON.stringify(response, null, 4);
+      // const jsonData = JSON.stringify(response, null, 4);
 
-      const blob = new Blob([jsonData], { type: 'application/json' });
+      const blob = new Blob([response], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);
 
       const link = document.createElement('a');
@@ -320,7 +322,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       
                       <li key={index} className={`border rounded-md p-4 bg-muted ${getStatusColor(signature.severity)}`}>
                         <h4 className={`text-md font-semibold ${signature.severity == 2 ? 'text-black' : "text-white"}`}>
-                          {signature.name || 'Unknown Name'}
+                          {signature.description || 'Unknown Name'}
                         </h4>
                        
                       </li>

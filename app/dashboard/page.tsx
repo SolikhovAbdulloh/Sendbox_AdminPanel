@@ -32,14 +32,7 @@ interface RawTaskData {
 }
 
 interface RawIncidentData {
-  malware: number;
-  ransomware: number;
-  trojan: number;
-  virus: number;
-  worm: number;
-  spyware: number;
-  cryptominer: number;
-  unknown: number;
+  [key: string]: number;
 }
 
 // Define TypeScript interfaces for transformed chart data
@@ -111,17 +104,13 @@ export default function DashboardPage() {
 
   // Transform raw incidentData into array format for PieChart, excluding zero values
   const incidentData: IncidentData[] = data?.incidentDistribution
-    ? [
-        { name: 'Malware', value: data.incidentDistribution.malware },
-        { name: 'Ransomware', value: data.incidentDistribution.ransomware },
-        { name: 'Trojan', value: data.incidentDistribution.trojan },
-        { name: 'Virus', value: data.incidentDistribution.virus },
-        { name: 'Worm', value: data.incidentDistribution.worm },
-        { name: 'Spyware', value: data.incidentDistribution.spyware },
-        { name: 'Cryptominer', value: data.incidentDistribution.cryptominer },
-        { name: 'Unknown', value: data.incidentDistribution.unknown },
-      ].filter(item => item.value > 0) // Exclude categories with zero values
+    ? Object.entries(data.incidentDistribution)
+        .map(([name, value]) => ({ name, value: value as number }))
+        .filter(item => item.value > 0) 
     : [];
+  
+  if (incidentData.length < data?.totalTasksSize) incidentData.push({ name: 'Other', value: data.totalTasksSize - incidentData.reduce((sum, item) => sum + item.value, 0) });
+  
 
   // Handle loading state
   if (isLoading) {

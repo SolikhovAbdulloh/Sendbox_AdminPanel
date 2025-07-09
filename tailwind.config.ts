@@ -61,6 +61,10 @@ const config = {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // green: {
+        //   500: '#10B981', // Agar bu yo'q bo'lsa, qo'shing
+        //   600: '#059669',
+        // },
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from "react";
 import { DashboardLayout } from "@/components/dashboard-layout";
@@ -29,7 +29,6 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/language-context";
 import { useQueryApi } from "@/share/hook/useQuery";
 import { useRouter, useSearchParams } from "next/navigation";
-import { size } from "lodash";
 import { IframeModal } from "@/components/iframe";
 
 // Available statuses, types, and incident types for filtering
@@ -46,7 +45,8 @@ export default function ActiveTasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const searchParams = useSearchParams();
+  const searchParams = typeof window !== 'undefined' ? useSearchParams() : new URLSearchParams();
+
   const page = parseInt(searchParams.get("page") || "1");
   const router = useRouter();
   const [selectViewId,setSelectViewId] = useState(null)

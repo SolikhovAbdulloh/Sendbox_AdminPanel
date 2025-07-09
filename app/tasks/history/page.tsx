@@ -34,7 +34,7 @@ import { format } from "date-fns";
 import { CalendarIcon, Eye, Filter, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import {  useState } from "react";
 
 const taskTypes = ["All", "File", "URL"];
 const incidentTypes = ["All", "None", "Malware", "Ransomware", "Phishing"];
@@ -51,9 +51,9 @@ export default function TaskHistoryPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const searchParams = useSearchParams();
+  const searchParams = typeof window !== 'undefined' ? useSearchParams() : new URLSearchParams();
   const router = useRouter();
-
+ 
   const page = parseInt(searchParams.get("page") || "1");
   const formatDateForApi = (date?: Date) =>
     date ? format(date, "yyyy-MM-dd") : "";
