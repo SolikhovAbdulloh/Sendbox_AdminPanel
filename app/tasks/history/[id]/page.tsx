@@ -26,6 +26,8 @@ function getSeverityColor(severity: number) {
 export default function TaskDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const getStatusColor = (severity: number | string) => {
     const sev = Number(severity);
+    console.log('sev', sev);
+
     switch (sev) {
       case 1:
         return 'bg-green-900';
@@ -34,7 +36,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
       case 3:
         return 'bg-red-500';
       default:
-        return 'bg-gray-300';
+        return 'bg-green-900';
     }
   };
 
@@ -320,9 +322,9 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                     {get(Taskinfo, 'signatures', []).map((signature: any, index: number) => (
                       <li
                         key={index}
-                        className={`border rounded-md p-4 bg-muted ${getStatusColor(
+                        className={`border rounded-md p-4  ${getStatusColor(
                           signature.severity,
-                        )}`}
+                        )} bg-muted`}
                       >
                         <h4
                           className={`text-md font-semibold ${

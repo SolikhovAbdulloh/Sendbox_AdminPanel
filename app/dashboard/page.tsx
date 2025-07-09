@@ -106,11 +106,14 @@ export default function DashboardPage() {
   const incidentData: IncidentData[] = data?.incidentDistribution
     ? Object.entries(data.incidentDistribution)
         .map(([name, value]) => ({ name, value: value as number }))
-        .filter(item => item.value > 0) 
+        .filter(item => item.value > 0)
     : [];
-  
-  if (incidentData.length < data?.totalTasksSize) incidentData.push({ name: 'Other', value: data.totalTasksSize - incidentData.reduce((sum, item) => sum + item.value, 0) });
-  
+
+  if (incidentData.length < data?.totalTasksSize)
+    incidentData.push({
+      name: 'Other',
+      value: data.totalTasksSize - incidentData.reduce((sum, item) => sum + item.value, 0),
+    });
 
   // Handle loading state
   if (isLoading) {
