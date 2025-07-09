@@ -1,22 +1,18 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { DashboardLayout } from "@/components/dashboard-layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { DashboardLayout } from '@/components/dashboard-layout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -24,11 +20,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ArrowLeft, Download, Save, X } from "lucide-react";
-import { useQueryApi } from "@/share/hook/useQuery";
-import { useLanguage } from "@/contexts/language-context";
-import { useEditSignature } from "@/share/hook/useQuery/useQueryAction";
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { useLanguage } from '@/contexts/language-context';
+import { useQueryApi } from '@/share/hook/useQuery';
+import { useEditSignature } from '@/share/hook/useQuery/useQueryAction';
+import { ArrowLeft, Download, Save, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 interface Signature {
   id: string;
@@ -42,32 +42,28 @@ interface Signature {
   lastModifiedAt: string;
 }
 
-export default function SignatureDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function SignatureDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: signatureId } = React.use(params);
   const { data, isLoading } = useQueryApi<Signature>({
     url: `/1/signature/signature/${signatureId}`,
-    pathname: "signatureById",
+    pathname: 'signatureById',
   });
   const router = useRouter();
   const { t } = useLanguage();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [signatureName, setSignatureName] = useState("");
-  const [signatureType, setSignatureType] = useState("");
-  const [signatureCode, setSignatureCode] = useState("");
+  const [signatureName, setSignatureName] = useState('');
+  const [signatureType, setSignatureType] = useState('');
+  const [signatureCode, setSignatureCode] = useState('');
 
   const { mutate, isPending } = useEditSignature();
 
   // Sync state with fetched data
   useEffect(() => {
     if (data) {
-      setSignatureName(data.name ?? "");
-      setSignatureType(data.category ?? "");
-      setSignatureCode(data.rule ?? "");
+      setSignatureName(data.name ?? '');
+      setSignatureType(data.category ?? '');
+      setSignatureCode(data.rule ?? '');
     }
   }, [data]);
   console.log({
@@ -91,33 +87,33 @@ export default function SignatureDetailsPage({
         },
         {
           onSuccess: () => {
-            alert("Signature updated successfully!");
-            router.push("/signatures");
+            alert('Signature updated successfully!');
+            router.push('/signatures');
           },
-        }
+        },
       );
       setIsEditing(false);
     } catch (error) {
-      alert("Failed to update signature. Please try again.");
+      alert('Failed to update signature. Please try again.');
     }
   };
 
   const handleCancel = () => {
     // Reset form values to original data
-    setSignatureName(data?.name ?? "");
-    setSignatureType(data?.category ?? "");
-    setSignatureCode(data?.rule ?? "");
+    setSignatureName(data?.name ?? '');
+    setSignatureType(data?.category ?? '');
+    setSignatureCode(data?.rule ?? '');
     setIsEditing(false);
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active":
-        return "bg-green-500";
-      case "inactive":
-        return "bg-gray-500";
+      case 'active':
+        return 'bg-green-700';
+      case 'inactive':
+        return 'bg-gray-500';
       default:
-        return "bg-yellow-500";
+        return 'bg-yellow-500';
     }
   };
 
@@ -126,7 +122,7 @@ export default function SignatureDetailsPage({
       <DashboardLayout>
         <Card>
           <CardContent>
-            <div className="text-center py-10">{t("common.loading")}</div>
+            <div className="text-center py-10">{t('common.loading')}</div>
           </CardContent>
         </Card>
       </DashboardLayout>
@@ -140,9 +136,7 @@ export default function SignatureDetailsPage({
           <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-semibold">
-            Signature Details: {signatureId}
-          </h1>
+          <h1 className="text-xl font-semibold">Signature Details: {signatureId}</h1>
           <Badge className={getStatusColor(data?.status)}>{data?.status}</Badge>
         </div>
         <div className="flex gap-2">
@@ -164,7 +158,7 @@ export default function SignatureDetailsPage({
               </Button>
               <Button onClick={handleSave} disabled={isPending}>
                 <Save className="mr-2 h-4 w-4" />
-                {isPending ? "Saving..." : "Save Changes"}
+                {isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </>
           )}
@@ -191,23 +185,18 @@ export default function SignatureDetailsPage({
                       id="signature-name"
                       placeholder="Enter signature name"
                       value={signatureName}
-                      onChange={(e) => setSignatureName(e.target.value)}
+                      onChange={e => setSignatureName(e.target.value)}
                       required
                     />
                   ) : (
-                    <div className="p-2 border rounded-md bg-muted/30">
-                      {data?.name}
-                    </div>
+                    <div className="p-2 border rounded-md bg-muted/30">{data?.name}</div>
                   )}
                 </div>
 
                 <div className="grid gap-3">
                   <Label htmlFor="signature-type">Signature Type</Label>
                   {isEditing ? (
-                    <Select
-                      value={signatureType}
-                      onValueChange={setSignatureType}
-                    >
+                    <Select value={signatureType} onValueChange={setSignatureType}>
                       <SelectTrigger id="signature-type">
                         <SelectValue placeholder="Select signature type" />
                       </SelectTrigger>
@@ -219,9 +208,7 @@ export default function SignatureDetailsPage({
                       </SelectContent>
                     </Select>
                   ) : (
-                    <div className="p-2 border rounded-md bg-muted/30">
-                      {data?.category}
-                    </div>
+                    <div className="p-2 border rounded-md bg-muted/30">{data?.category}</div>
                   )}
                 </div>
               </div>
@@ -247,11 +234,8 @@ export default function SignatureDetailsPage({
                 {isEditing ? (
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                      {(signatureCode || "").split("\n").map((_, i) => (
-                        <div
-                          key={i}
-                          className="h-6 flex items-center justify-center"
-                        >
+                      {(signatureCode || '').split('\n').map((_, i) => (
+                        <div key={i} className="h-6 flex items-center justify-center">
                           {i + 1}
                         </div>
                       ))}
@@ -259,31 +243,26 @@ export default function SignatureDetailsPage({
                     <Textarea
                       id="signature-code"
                       value={signatureCode}
-                      onChange={(e) => setSignatureCode(e.target.value)}
+                      onChange={e => setSignatureCode(e.target.value)}
                       className="font-mono text-sm h-96 resize-none pl-12 pr-4 py-2 bg-muted/30 focus-visible:bg-background"
-                      style={{ lineHeight: "1.5rem" }}
+                      style={{ lineHeight: '1.5rem' }}
                       required
                     />
                   </div>
                 ) : (
                   <div className="relative border rounded-md overflow-hidden">
                     <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                      {(data?.rule || "")
-                        .split("\n")
-                        .map((_: any, i: string) => (
-                          <div
-                            key={i}
-                            className="h-6 flex items-center justify-center"
-                          >
-                            {i + 1}
-                          </div>
-                        ))}
+                      {(data?.rule || '').split('\n').map((_: any, i: string) => (
+                        <div key={i} className="h-6 flex items-center justify-center">
+                          {i + 1}
+                        </div>
+                      ))}
                     </div>
                     <pre
                       className="font-mono text-sm overflow-auto h-96 pl-12 pr-4 py-2 bg-muted/30 m-0"
-                      style={{ lineHeight: "1.5rem" }}
+                      style={{ lineHeight: '1.5rem' }}
                     >
-                      {data?.rule || "No rule defined"}
+                      {data?.rule || 'No rule defined'}
                     </pre>
                   </div>
                 )}
@@ -292,31 +271,23 @@ export default function SignatureDetailsPage({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="grid gap-3">
                   <Label>Created By</Label>
-                  <div className="p-2 border rounded-md bg-muted/30">
-                    {data?.uploadedBy}
-                  </div>
+                  <div className="p-2 border rounded-md bg-muted/30">{data?.uploadedBy}</div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Created Date</Label>
-                  <div className="p-2 border rounded-md bg-muted/30">
-                    {data?.uploadedAt}
-                  </div>
+                  <div className="p-2 border rounded-md bg-muted/30">{data?.uploadedAt}</div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Last Modified</Label>
-                  <div className="p-2 border rounded-md bg-muted/30">
-                    {data?.lastModifiedAt}
-                  </div>
+                  <div className="p-2 border rounded-md bg-muted/30">{data?.lastModifiedAt}</div>
                 </div>
 
                 <div className="grid gap-3">
                   <Label>Status</Label>
                   <div className="p-2 border rounded-md bg-muted/30">
-                    <Badge className={getStatusColor(data?.status)}>
-                      {data?.status}
-                    </Badge>
+                    <Badge className={getStatusColor(data?.status)}>{data?.status}</Badge>
                   </div>
                 </div>
               </div>

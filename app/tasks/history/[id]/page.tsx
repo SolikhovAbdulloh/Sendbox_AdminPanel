@@ -23,24 +23,15 @@ function getSeverityColor(severity: number) {
   return 'bg-gray-300 text-black';
 }
 
-
-
 export default function TaskDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-
-
-
   const getStatusColor = (severity: number) => {
-    console.log(severity);
-    
-    
     switch (severity) {
-      case 1:   
-        return "bg-green-700";
+      case 1:
+        return 'bg-green-800';
       case 2:
-        return "bg-yellow-500";
+        return 'bg-yellow-500';
       case 3:
-        return "bg-red-500";
-      
+        return 'bg-red-500';
     }
   };
 
@@ -51,11 +42,15 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
     url: `1/cape/tasks/get/screenshot/${taskId}`,
     pathname: 'screenphotos',
   });
-  const { data: Taskinfo, isLoading ,isFetching} = useQueryApi({
+  const {
+    data: Taskinfo,
+    isLoading,
+    isFetching,
+  } = useQueryApi({
     url: `1/cape/tasks/get/report/${taskId}`,
     pathname: 'taskInformation',
   });
-  
+
   const downloadFile = async (taskId: string) => {
     try {
       const axios = useAxios();
@@ -63,7 +58,6 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
         url: `/1/cape/tasks/download/report/${taskId}`,
         method: 'GET',
       });
-      
 
       const jsonData = JSON.stringify(response, null, 2);
 
@@ -72,7 +66,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
 
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `report_${taskId}.json`); 
+      link.setAttribute('download', `report_${taskId}.json`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -81,25 +75,23 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
     }
   };
   const downloadLogFIle = async (taskId: string) => {
-    
     const axios = useAxios();
     const response = await axios({
       url: `/1/cape/tasks/download/log/${taskId}`,
       method: 'GET',
     });
 
-      // const jsonData = JSON.stringify(response, null, 4);
+    // const jsonData = JSON.stringify(response, null, 4);
 
-      const blob = new Blob([response], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
+    const blob = new Blob([response], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
 
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `log${taskId}.log`); 
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `log${taskId}.log`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
   if (isLoading || isFetching) {
     return (
@@ -181,7 +173,11 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                     <TableCell className="font-medium">Log(s)</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
-                        <Button onClick={() => downloadLogFIle(taskId)} variant="link" className="h-auto p-0 justify-start">
+                        <Button
+                          onClick={() => downloadLogFIle(taskId)}
+                          variant="link"
+                          className="h-auto p-0 justify-start"
+                        >
                           <Download className="mr-1 h-3 w-3" />
                         </Button>
                       </div>
@@ -317,14 +313,21 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                 <h3 className="text-lg font-medium">Detected Behaviors</h3>
                 {Array.isArray(get(Taskinfo, 'signatures', [])) &&
                 get(Taskinfo, 'signatures', []).length > 0 ? (
-                    <ul className='space-y-2'>
-                      {get(Taskinfo, 'signatures', []).map((signature: any, index: number) => (
-                      
-                      <li key={index} className={`border rounded-md p-4 bg-muted ${getStatusColor(signature.severity)}`}>
-                        <h4 className={`text-md font-semibold ${signature.severity == 2 ? 'text-black' : "text-white"}`}>
+                  <ul className="space-y-2">
+                    {get(Taskinfo, 'signatures', []).map((signature: any, index: number) => (
+                      <li
+                        key={index}
+                        className={`border rounded-md p-4 bg-muted ${getStatusColor(
+                          signature.severity,
+                        )}`}
+                      >
+                        <h4
+                          className={`text-md font-semibold ${
+                            signature.severity == 2 ? 'text-black' : 'text-white'
+                          }`}
+                        >
                           {signature.description || 'Unknown Name'}
                         </h4>
-                       
                       </li>
                     ))}
                   </ul>
@@ -406,45 +409,52 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Accessed Files</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.files",[]).map((file:string, index:number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.files', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Read Files</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.read_files",[]).map((file:string, index:number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.read_files', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
-
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Deleted Files</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.delete_files",[]).map((file:string, index:number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.delete_files', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Executed Commands</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.executed_commands",[]).map((file:string, index:number | string)  => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.executed_commands', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 </div>
@@ -453,57 +463,65 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                   <div>
                     <h3 className="text-lg font-medium mb-2">Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.keys",[]).map((file:string, index:number | string)  => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.keys', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Read Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.read_keys",[]).map((file:string, index:number | string)  => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.read_keys', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
-
-               
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Deleted Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.delete_keys",[]).map((file:string, index:number | string)   => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.delete_keys', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Mutexes</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.summary.mutexes",[]).map((file:string, index:number | string)=> (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.summary.mutexes', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">Started Services</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo,"behavior.started.services",[]).map((file:string, index:number | string)=> (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ))}
+                      {get(Taskinfo, 'behavior.started.services', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
                     </ul>
                   </div>
                 </div>
