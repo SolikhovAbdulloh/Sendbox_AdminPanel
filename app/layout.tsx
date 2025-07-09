@@ -17,9 +17,9 @@ export const metadata: Metadata = {
     siteName: 'Sector Sandbox',
     images: [
       {
-        url: '../public/logo.png',
-        width: 1200,
-        height: 630,
+        url: 'https://sendboxfinaly.vercel.app/logo.png',
+        width: 800,
+        height: 600,
         alt: 'Sector Sandbox Admin Preview',
       },
     ],
