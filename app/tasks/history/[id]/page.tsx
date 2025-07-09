@@ -35,7 +35,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
     
     switch (severity) {
       case 1:   
-        return "bg-green-700";
+        return "bg-green-800";
       case 2:
         return "bg-yellow-500";
       case 3:
