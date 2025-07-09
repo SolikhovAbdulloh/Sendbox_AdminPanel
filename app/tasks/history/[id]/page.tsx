@@ -24,14 +24,17 @@ function getSeverityColor(severity: number) {
 }
 
 export default function TaskDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  const getStatusColor = (severity: number) => {
-    switch (severity) {
+  const getStatusColor = (severity: number | string) => {
+    const sev = Number(severity);
+    switch (sev) {
       case 1:
-        return 'bg-green-800';
+        return 'bg-green-900';
       case 2:
         return 'bg-yellow-500';
       case 3:
         return 'bg-red-500';
+      default:
+        return 'bg-gray-300';
     }
   };
 

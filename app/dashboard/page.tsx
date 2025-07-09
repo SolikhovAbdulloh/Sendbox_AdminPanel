@@ -239,7 +239,7 @@ export default function DashboardPage() {
                     <Pie
                       data={incidentData}
                       cx="50%"
-                      cy="50%"
+                      cy="52%"
                       labelLine={false}
                       outerRadius={100}
                       fill="#8884d8"

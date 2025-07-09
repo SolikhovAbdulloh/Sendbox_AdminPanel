@@ -12,10 +12,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  // Check if user is authenticated
   useEffect(() => {
-    // In a real app, you would check for a valid session/token
-    // For demo purposes, we'll assume the user is authenticated if not on the login page
     setIsAuthenticated(!pathname.includes("/login"))
   }, [pathname])
 
