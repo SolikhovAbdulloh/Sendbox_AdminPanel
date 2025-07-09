@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: 'Sector Sandbox Admin',
   description: 'Admin panel for Sector Sandbox',
   generator: 'solikhov',
+  icons: {
+    icon: '/logo.png',
+  },
   openGraph: {
     title: 'Sector Sandbox Admin',
     description: 'Powerful and modern admin panel for Sector Sandbox',
