@@ -4,7 +4,7 @@ module.exports = {
         name: 'securesector',
         script: 'npm',
         args: 'start',
-        cwd: '/home/baxa/coding/front-sendbox', // Loyiha papkangizning to‘g‘ri yo‘li
+        cwd: '/var/www/front-sendbox', 
         env: {
           NODE_ENV: 'production',
           PORT: 3000,
