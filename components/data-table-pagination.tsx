@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronsLeftIcon,
-  ChevronsRightIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+} from 'lucide-react';
 
 interface DataTablePaginationProps {
   currentPage: number;
@@ -58,13 +58,13 @@ export function DataTablePagination({
           <p className="text-sm font-medium">Items per page</p>
           <Select
             value={pageSize.toString()}
-            onValueChange={(value) => onPageSizeChange(Number(value))}
+            onValueChange={value => onPageSizeChange(Number(value))}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={pageSize.toString()} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 25, 50, 100].map((size) => (
+              {[10, 25, 50, 100].map(size => (
                 <SelectItem key={size} value={size.toString()}>
                   {size}
                 </SelectItem>
@@ -117,11 +117,7 @@ export function DataTablePagination({
             <span className="sr-only">Go to last page</span>
             <ChevronsRightIcon className="h-4 w-4" />
           </Button>
-          <Button
-            variant="default"
-            className="h-8"
-            onClick={backpage}
-          >
+          <Button variant="default" className="h-8" onClick={backpage}>
             Back
           </Button>
           <Button variant="default" className="h-8" onClick={nextpage}>

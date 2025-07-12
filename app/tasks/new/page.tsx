@@ -176,17 +176,17 @@ export default function NewTaskPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutate({ file, machine });
-    console.log({
-      // type: activeTab,
-      file,
-      // url,
-      // analysisPackage,
-      machine,
-      // options,
-      // priority,
-      // preScript,
-      // duringScript,
-    });
+    // console.log({
+    //   // type: activeTab,
+    //   file,
+    //   // url,
+    //   // analysisPackage,
+    //   machine,
+    //   // options,
+    //   // priority,
+    //   // preScript,
+    //   // duringScript,
+    // });
   };
   useEffect(() => {
     if (isSuccess) {

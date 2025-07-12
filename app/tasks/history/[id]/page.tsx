@@ -26,7 +26,6 @@ function getSeverityColor(severity: number) {
 export default function TaskDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const getStatusColor = (severity: number | string) => {
     const sev = Number(severity);
-    console.log('sev', sev);
 
     switch (sev) {
       case 1:
@@ -107,6 +106,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
       </DashboardLayout>
     );
   }
+  // console.log(Taskinfo?.target?.file);
 
   return (
     <DashboardLayout>
@@ -292,14 +292,16 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       </code>
                     </TableCell>
                   </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">TLSH</TableCell>
-                    <TableCell>
-                      <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
-                        {get(Taskinfo, 'target.file2.tlsh', 'null')}
-                      </code>
-                    </TableCell>
-                  </TableRow>
+                  {Taskinfo?.target?.file2?.tlsh && (
+                    <TableRow>
+                      <TableCell className="font-medium">TLSH</TableCell>
+                      <TableCell>
+                        <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+                          {get(Taskinfo, 'target.file2.tlsh', 'null')}
+                        </code>
+                      </TableCell>
+                    </TableRow>
+                  )}
                   <TableRow>
                     <TableCell className="font-medium">Ssdeep</TableCell>
                     <TableCell>
@@ -308,6 +310,20 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       </code>
                     </TableCell>
                   </TableRow>
+                  {Taskinfo?.target?.file?.yara[0] && (
+                    <TableRow>
+                      <TableCell className="font-medium w-1/4">Yara</TableCell>
+                      <TableCell>
+                        <div className="flex gap-3 items-center justify-items-start text-20">
+                          <span className="hover:text-[red] justify-start">
+                            {get(Taskinfo, 'target.file.yara[0].name')}
+                          </span>
+                          <span>{get(Taskinfo, 'target.file.yara[0].meta.description')}</span>
+                          Author:{get(Taskinfo, 'target.file.yara[0].meta.author')}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
             </TabsContent>
@@ -322,9 +338,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                     {get(Taskinfo, 'signatures', []).map((signature: any, index: number) => (
                       <li
                         key={index}
-                        className={`border rounded-md p-4  ${getStatusColor(
-                          signature.severity,
-                        )}`}
+                        className={`border rounded-md p-4  ${getStatusColor(signature.severity)}`}
                       >
                         <h4
                           className={`text-md font-semibold ${

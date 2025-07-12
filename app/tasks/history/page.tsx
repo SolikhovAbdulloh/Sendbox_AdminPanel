@@ -129,18 +129,18 @@ export default function TaskHistoryPage() {
 
   const getIncidentColor = (incidentType: string) => {
     return 'bg-red-500';
-    switch (incidentType == null ? "" : incidentType) {
-      case "Malware":
-        return "bg-orange-500";
-      case "Ransomware":
-        return "bg-red-500";
-      case "Phishing":
-        return "bg-blue-500";
-      case "None":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
+    // switch (incidentType == null ? "" : incidentType) {
+    //   case "Malware":
+    //     return "bg-orange-500";
+    //   case "Ransomware":
+    //     return "bg-red-500";
+    //   case "Phishing":
+    //     return "bg-blue-500";
+    //   case "None":
+    //     return "bg-red-500";
+    //   default:
+    //     return "bg-gray-500";
+    // }
   };
 
   const resetFilters = () => {
@@ -419,9 +419,9 @@ export default function TaskHistoryPage() {
             currentPage={validCurrentPage}
             totalPages={totalPages}
             pageSize={pageSize}
+            totalItems={totalItems}
             nextpage={handleNextPage}
             backpage={handleBackPage}
-            totalItems={totalItems}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
           />

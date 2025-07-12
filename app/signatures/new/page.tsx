@@ -1,41 +1,35 @@
-"use client";
+'use client';
 
-import type React from "react";
+import type React from 'react';
 
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { DashboardLayout } from "@/components/dashboard-layout";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { DashboardLayout } from '@/components/dashboard-layout';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Save, X, AlertCircle, FileUp } from "lucide-react";
-import { useUploadSignature } from "@/share/hook/useQuery/useQueryAction";
-import { useLanguage } from "@/contexts/language-context";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useLanguage } from '@/contexts/language-context';
+import { useUploadSignature } from '@/share/hook/useQuery/useQueryAction';
+import { AlertCircle, FileUp, Save, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function NewSignaturePage() {
   const router = useRouter();
   const { t } = useLanguage();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [signatureName, setSignatureName] = useState("");
-  const [signatureType, setSignatureType] = useState("YARA");
-  const [signatureCode, setSignatureCode] = useState("");
+  const [signatureName, setSignatureName] = useState('');
+  const [signatureType, setSignatureType] = useState('YARA');
+  const [signatureCode, setSignatureCode] = useState('');
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -50,17 +44,24 @@ export default function NewSignaturePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const file = fileInputRef.current?.files?.[0];
 
-    mutate(payload);
+    if (!file) {
+      alert('Fayl tanlanmadi');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    mutate(formData);
   };
   useEffect(() => {
     if (isSuccess) {
-      router.push("/signatures");
+      router.push('/signatures');
     }
   }, [isSuccess]);
 
   const handleCancel = () => {
-    router.push("/signatures");
+    router.push('/signatures');
   };
 
   const handleFileUpload = (file: File) => {
@@ -68,25 +69,25 @@ export default function NewSignaturePage() {
     setUploadSuccess(null);
 
     // Check file type
-    const fileExtension = file.name.split(".").pop()?.toLowerCase();
-    let detectedType = "Custom";
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    let detectedType = 'Custom';
 
-    if (fileExtension === "yar" || fileExtension === "yara") {
-      detectedType = "YARA";
-    } else if (fileExtension === "rules" || fileExtension === "rule") {
-      detectedType = "Suricata";
-    } else if (fileExtension === "regex" || fileExtension === "txt") {
-      detectedType = "Regex";
+    if (fileExtension === 'yar' || fileExtension === 'yara') {
+      detectedType = 'YARA';
+    } else if (fileExtension === 'rules' || fileExtension === 'rule') {
+      detectedType = 'Suricata';
+    } else if (fileExtension === 'regex' || fileExtension === 'txt') {
+      detectedType = 'Regex';
     }
 
     // Read file content
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       try {
         const content = e.target?.result as string;
 
         // Extract name from file name (remove extension)
-        const fileName = file.name.replace(/\.[^/.]+$/, "");
+        const fileName = file.name.replace(/\.[^/.]+$/, '');
 
         // Set form values based on file content
         setSignatureName(fileName);
@@ -94,25 +95,21 @@ export default function NewSignaturePage() {
         setSignatureCode(content);
 
         // Try to extract description from YARA rules
-        if (detectedType === "YARA") {
-          const descriptionMatch = content.match(
-            /description\s*=\s*["']([^"']+)["']/i
-          );
+        if (detectedType === 'YARA') {
+          const descriptionMatch = content.match(/description\s*=\s*["']([^"']+)["']/i);
           if (descriptionMatch && descriptionMatch[1]) {
           }
         }
 
         setUploadSuccess(`File "${file.name}" uploaded successfully.`);
       } catch (error) {
-        console.error("Error parsing file:", error);
-        setUploadError(
-          "Failed to parse the signature file. Please check the file format."
-        );
+        console.error('Error parsing file:', error);
+        setUploadError('Failed to parse the signature file. Please check the file format.');
       }
     };
 
     reader.onerror = () => {
-      setUploadError("Error reading the file. Please try again.");
+      setUploadError('Error reading the file. Please try again.');
     };
 
     reader.readAsText(file);
@@ -144,7 +141,6 @@ export default function NewSignaturePage() {
       handleFileUpload(files[0]);
     }
   };
-
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
@@ -153,18 +149,18 @@ export default function NewSignaturePage() {
     <DashboardLayout>
       <Card>
         <CardHeader>
-          <CardTitle>{t("signatures.create")}</CardTitle>
+          <CardTitle>{t('signatures.create')}</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
             {/* File Upload Section */}
             <div className="grid gap-3">
-              <Label>{t("signatures.uploadSignature")}</Label>
+              <Label>{t('signatures.uploadSignature')}</Label>
               <div
                 className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
                   isDragging
-                    ? "border-primary bg-primary/5"
-                    : "border-muted-foreground/25 hover:border-primary/50"
+                    ? 'border-primary bg-primary/5'
+                    : 'border-muted-foreground/25 hover:border-primary/50'
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -179,11 +175,9 @@ export default function NewSignaturePage() {
                   onChange={handleFileInputChange}
                 />
                 <FileUp className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm font-medium mb-1">
-                  {t("signatures.dragDropSignature")}
-                </p>
+                <p className="text-sm font-medium mb-1">{t('signatures.dragDropSignature')}</p>
                 <p className="text-xs text-muted-foreground">
-                  {t("signatures.supportsSignatureTypes")}
+                  {t('signatures.supportsSignatureTypes')}
                 </p>
               </div>
             </div>
@@ -204,22 +198,18 @@ export default function NewSignaturePage() {
             )}
 
             <div className="grid gap-3">
-              <Label htmlFor="signature-name">
-                {t("signatures.signatureName")}
-              </Label>
+              <Label htmlFor="signature-name">{t('signatures.signatureName')}</Label>
               <Input
                 id="signature-name"
                 placeholder="Enter signature name"
                 value={signatureName}
-                onChange={(e) => setSignatureName(e.target.value)}
+                onChange={e => setSignatureName(e.target.value)}
                 required
               />
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="signature-type">
-                {t("signatures.signatureType")}
-              </Label>
+              <Label htmlFor="signature-type">{t('signatures.signatureType')}</Label>
               <Select value={signatureType} onValueChange={setSignatureType}>
                 <SelectTrigger id="signature-type">
                   <SelectValue placeholder="Select signature type" />
@@ -234,16 +224,11 @@ export default function NewSignaturePage() {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="signature-code">
-                {t("signatures.ruleEditor")}
-              </Label>
+              <Label htmlFor="signature-code">{t('signatures.ruleEditor')}</Label>
               <div className="relative border rounded-md overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-10 bg-muted border-r flex flex-col text-xs text-muted-foreground select-none">
-                  {signatureCode.split("\n").map((_, i) => (
-                    <div
-                      key={i}
-                      className="h-6 flex items-center justify-center"
-                    >
+                  {signatureCode.split('\n').map((_, i) => (
+                    <div key={i} className="h-6 flex items-center justify-center">
                       {i + 1}
                     </div>
                   ))}
@@ -253,15 +238,13 @@ export default function NewSignaturePage() {
                   placeholder="Enter your signature rule here..."
                   className="font-mono text-sm h-64 resize-none pl-12 pr-4 py-2 bg-muted/30 focus-visible:bg-background"
                   value={signatureCode}
-                  onChange={(e) => setSignatureCode(e.target.value)}
+                  onChange={e => setSignatureCode(e.target.value)}
                   required
-                  style={{ lineHeight: "1.5rem" }}
+                  style={{ lineHeight: '1.5rem' }}
                 />
               </div>
-              {signatureType === "YARA" && (
-                <p className="text-xs text-muted-foreground">
-                  {t("signatures.yaraExample")}
-                </p>
+              {signatureType === 'YARA' && (
+                <p className="text-xs text-muted-foreground">{t('signatures.yaraExample')}</p>
               )}
             </div>
           </CardContent>
@@ -272,7 +255,7 @@ export default function NewSignaturePage() {
             </Button>
             <Button type="submit">
               <Save className="mr-2 h-4 w-4" />
-              {isPending ? "Loading..." : "Save Signature"}
+              {isPending ? 'Loading...' : 'Save Signature'}
             </Button>
           </CardFooter>
         </form>
