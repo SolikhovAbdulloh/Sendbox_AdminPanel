@@ -70,7 +70,7 @@ const COLORS = [
 
 export default function DashboardPage() {
   const { t } = useLanguage();
-  const { data, isLoading, isError, error } = useQueryApi<DashboardData>({
+  const { data, isLoading, isError, error, isFetching } = useQueryApi<DashboardData>({
     url: '1/cape/tasks/dashboard',
     pathname: 'dashboard',
   });
@@ -102,7 +102,6 @@ export default function DashboardPage() {
       ]
     : [];
 
-  // Transform raw incidentData into array format for PieChart, excluding zero values
   const incidentData: IncidentData[] = data?.incidentDistribution
     ? Object.entries(data.incidentDistribution)
         .map(([name, value]) => ({ name, value: value as number }))
@@ -116,7 +115,7 @@ export default function DashboardPage() {
     });
 
   // Handle loading state
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
@@ -241,10 +240,11 @@ export default function DashboardPage() {
                   <PieChart>
                     <Pie
                       data={incidentData}
-                      cx="50%"
-                      cy="52%"
+                      cx="48%"
+                      paddingAngle={5}
+                      cy="58%"
                       labelLine={false}
-                      outerRadius={100}
+                      outerRadius={90}
                       fill="#8884d8"
                       dataKey="value"
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
