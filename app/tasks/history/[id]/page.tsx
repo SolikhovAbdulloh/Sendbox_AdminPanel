@@ -425,10 +425,69 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
             <TabsContent value="summary" className="mt-4">
               <div className="flex flex-col justify-start gap-6">
                 <div className="space-y-4">
+                  {Taskinfo?.behavior?.summary?.files?.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Accessed Files</h3>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {get(Taskinfo, 'behavior.summary.files', []).map(
+                          (file: string, index: number | string) => (
+                            <li key={index} className="text-sm font-mono break-all">
+                              {file}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  {Taskinfo?.behavior?.summary?.read_files?.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Read Files</h3>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {get(Taskinfo, 'behavior.summary.read_files', []).map(
+                          (file: string, index: number | string) => (
+                            <li key={index} className="text-sm font-mono break-all">
+                              {file}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                  {Taskinfo?.behavior?.summary?.delete_files?.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Deleted Files</h3>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {get(Taskinfo, 'behavior.summary.delete_files', []).map(
+                          (file: string, index: number | string) => (
+                            <li key={index} className="text-sm font-mono break-all">
+                              {file}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                  {Taskinfo?.behavior?.summary?.executed_commands?.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Executed Commands</h3>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {get(Taskinfo, 'behavior.summary.executed_commands', []).map(
+                          (file: string, index: number | string) => (
+                            <li key={index} className="text-sm font-mono break-all">
+                              {file}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                {Taskinfo?.behavior?.summary?.keys?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Accessed Files</h3>
+                    <h3 className="text-lg font-medium mb-2">Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo, 'behavior.summary.files', []).map(
+                      {get(Taskinfo, 'behavior.summary.keys', []).map(
                         (file: string, index: number | string) => (
                           <li key={index} className="text-sm font-mono break-all">
                             {file}
@@ -437,11 +496,12 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       )}
                     </ul>
                   </div>
-
+                )}
+                {Taskinfo?.behavior?.summary?.read_keys?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Read Files</h3>
+                    <h3 className="text-lg font-medium mb-2">Read Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo, 'behavior.summary.read_files', []).map(
+                      {get(Taskinfo, 'behavior.summary.read_keys', []).map(
                         (file: string, index: number | string) => (
                           <li key={index} className="text-sm font-mono break-all">
                             {file}
@@ -450,11 +510,13 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       )}
                     </ul>
                   </div>
+                )}
 
+                {Taskinfo?.behavior?.summary?.delete_keys?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Deleted Files</h3>
+                    <h3 className="text-lg font-medium mb-2">Deleted Registry Keys</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo, 'behavior.summary.delete_files', []).map(
+                      {get(Taskinfo, 'behavior.summary.delete_keys', []).map(
                         (file: string, index: number | string) => (
                           <li key={index} className="text-sm font-mono break-all">
                             {file}
@@ -463,11 +525,12 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       )}
                     </ul>
                   </div>
-
+                )}
+                {Taskinfo?.behavior?.started?.services?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Executed Commands</h3>
+                    <h3 className="text-lg font-medium mb-2">Mutexes</h3>
                     <ul className="list-disc pl-5 space-y-1">
-                      {get(Taskinfo, 'behavior.summary.executed_commands', []).map(
+                      {get(Taskinfo, 'behavior.summary.mutexes', []).map(
                         (file: string, index: number | string) => (
                           <li key={index} className="text-sm font-mono break-all">
                             {file}
@@ -476,72 +539,21 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
                       )}
                     </ul>
                   </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Registry Keys</h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {get(Taskinfo, 'behavior.summary.keys', []).map(
-                      (file: string, index: number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Read Registry Keys</h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {get(Taskinfo, 'behavior.summary.read_keys', []).map(
-                      (file: string, index: number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Deleted Registry Keys</h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {get(Taskinfo, 'behavior.summary.delete_keys', []).map(
-                      (file: string, index: number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Mutexes</h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {get(Taskinfo, 'behavior.summary.mutexes', []).map(
-                      (file: string, index: number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium mb-2">Started Services</h3>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {get(Taskinfo, 'behavior.started.services', []).map(
-                      (file: string, index: number | string) => (
-                        <li key={index} className="text-sm font-mono break-all">
-                          {file}
-                        </li>
-                      ),
-                    )}
-                  </ul>
-                </div>
+                )}
+                {Taskinfo?.behavior?.started?.services?.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">Started Services</h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {get(Taskinfo, 'behavior.started.services', []).map(
+                        (file: string, index: number | string) => (
+                          <li key={index} className="text-sm font-mono break-all">
+                            {file}
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
               </div>
             </TabsContent>
           </Tabs>
