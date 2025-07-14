@@ -33,6 +33,7 @@ import {
 } from '@/share/hook/useQuery/useQueryAction';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import { Eye, MoreHorizontal, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -71,13 +72,13 @@ export default function SignaturesPage() {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const searchParams = typeof window !== 'undefined' ? useSearchParams() : new URLSearchParams();
-
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const page = parseInt(searchParams.get('page') || '1');
 
-  const { data, isLoading } = useQueryApi<Signature[]>({
-    url: `/1/signature/all?page=${currentPage}&limit=100`,
+  const { data, isLoading, isFetching } = useQueryApi<Signature[]>({
+    url: `/1/signature/all?page=${page}&limit=100`,
     pathname: 'signatures',
   });
 
@@ -89,14 +90,20 @@ export default function SignaturesPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const tasks = data || [];
 
-  const currentItems = data || [];
-  const filteredUsers = currentItems.filter((user: any) =>
+  const filteredUsers = tasks.filter((user: any) =>
     user?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalItems = filteredUsers.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+
+  const validCurrentPage = Math.min(currentPage, totalPages);
+  if (validCurrentPage !== currentPage) {
+    setCurrentPage(validCurrentPage);
+  }
+
   const { mutate, isPending } = useEditSignature();
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -108,15 +115,18 @@ export default function SignaturesPage() {
         return 'bg-green-500';
     }
   };
+  const startIndex = (validCurrentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const currentItems = filteredUsers.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const validCurrentPage = Math.min(currentPage, totalPages);
-  if (validCurrentPage !== currentPage) {
-    setCurrentPage(validCurrentPage);
-  }
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
 
   const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
@@ -130,19 +140,7 @@ export default function SignaturesPage() {
     params.set('page', String(currentPage == 1 ? 1 : currentPage - 1));
     router.push(`?${params.toString()}`);
   };
-  // const handleEditClick = (sig: Signature) => {
-  //   setEditSignature({ id: sig.id });
-  //   reset({
-  //     name: sig.name,
-  //     type: sig.type,
-  //     rule: sig.rule,
-  //   });
-  //   setIsModalOpen(true);
-  // };
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  };
+
   const onSubmit = (data: FormData) => {
     if (editSignature?.id) {
       mutate(
@@ -176,7 +174,7 @@ export default function SignaturesPage() {
     pathname: 'role',
   });
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <DashboardLayout>
         <Card>
@@ -236,15 +234,15 @@ export default function SignaturesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((sig: any, index: string) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((sig: any, index: string) => (
                   <TableRow key={sig.id}>
                     <TableCell className="font-medium">{index + 1}</TableCell>
                     <TableCell className="font-medium">{sig.name}</TableCell>
                     <TableCell>{sig.type}</TableCell>
                     <TableCell>{sig.uploadedBy.username}</TableCell>
-                    <TableCell>{sig.createdAt}</TableCell>
-                    <TableCell>{sig.lastModifiedAt}</TableCell>
+                    <TableCell>{format(sig.createdAt, 'MM/dd/yyyy')}</TableCell>
+                    <TableCell>{format(sig.lastModifiedAt, 'MM/dd/yyyy')}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(sig.status)}>{sig.status}</Badge>
                     </TableCell>
