@@ -110,6 +110,7 @@
     "restartTask": "Перезапустить задачу",
     "viewDetails": "Просмотр деталей",
     "running": "Выполняется",
+    "failed_analysis": "Неудачный анализ",
     "pending": "Ожидает",
     "analyzing": "Анализируется",
     "completed": "Завершено",

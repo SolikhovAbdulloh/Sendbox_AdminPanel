@@ -110,6 +110,7 @@ export default function ActiveTasksPage() {
   console.log(currentItems);
 
   const getStatusColor = (status: string) => {
+    console.log(status);
     switch (status) {
       case 'running':
         return 'bg-green-500';
@@ -122,20 +123,20 @@ export default function ActiveTasksPage() {
     }
   };
 
-  const getIncidentColor = (incidentType: string) => {
-    switch (incidentType) {
-      case 'Malware':
-        return 'bg-orange-500';
-      case 'Ransomware':
-        return 'bg-red-500';
-      case 'Phishing':
-        return 'bg-blue-500';
-      case 'Unknown':
-        return 'bg-gray-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
+  // const getIncidentColor = (incidentType: string) => {
+  //   switch (incidentType) {
+  //     case 'Malware':
+  //       return 'bg-orange-500';
+  //     case 'Ransomware':
+  //       return 'bg-red-500';
+  //     case 'Phishing':
+  //       return 'bg-blue-500';
+  //     case 'Unknown':
+  //       return 'bg-gray-500';
+  //     default:
+  //       return 'bg-gray-500';
+  //   }
+  // };
 
   const resetFilters = () => {
     setStatusFilter('All');

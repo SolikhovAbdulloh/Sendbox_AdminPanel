@@ -115,6 +115,8 @@ export default function TaskHistoryPage() {
         return 'bg-green-500';
       case 'completed':
         return 'bg-yellow-500';
+      case 'failed_analysis':
+        return 'bg-red-500';
       default:
         return 'bg-gray-500';
     }
@@ -371,12 +373,14 @@ export default function TaskHistoryPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/tasks/history/${task.id}`}>
-                          <Eye className="h-4 w-4" />
-                          <span className="sr-only">{t('tasks.viewDetails')}</span>
-                        </Link>
-                      </Button>
+                      {task.status !== 'failed_analysis' && (
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link href={`/tasks/history/${task.id}`}>
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">{t('tasks.viewDetails')}</span>
+                          </Link>
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

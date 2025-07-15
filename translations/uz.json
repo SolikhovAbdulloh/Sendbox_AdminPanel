@@ -115,7 +115,8 @@
     "analyzing": "Tahlil qilinmoqda",
     "completed": "Bajarildi",
     "failed": "Muvaffaqiyatsiz",
-    "reported": "xabar berdi"
+    "reported": "xabar berdi",
+    "failed_analysis": "Muvaffaqiyatsiz tahlil"
   },
   "virtualMachines": {
     "title": "Virtual mashinalar",

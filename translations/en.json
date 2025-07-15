@@ -116,6 +116,7 @@
     "delete": "Delete",
     "create": "Create new task",
     "processing": "Processing",
+    "failed_analysis": "Failed analysis",
     "reported": "reported"
   },
   "virtualMachines": {
