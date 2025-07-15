@@ -1,80 +1,69 @@
-"use client";
+'use client';
 
-import type React from "react";
+import type React from 'react';
 
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { DashboardLayout } from "@/components/dashboard-layout";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardLayout } from '@/components/dashboard-layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { FileUp, Info, Send, X } from "lucide-react";
-import { useCreateFile } from "@/share/hook/useQuery/useQueryAction";
-import { useLanguage } from "@/contexts/language-context";
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useLanguage } from '@/contexts/language-context';
+import { useCreateFile } from '@/share/hook/useQuery/useQueryAction';
+import { FileUp, Info, Send, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 // Sample data for dropdowns
 const analysisPackages = [
   {
-    value: "exe",
-    label: "Windows Executable (exe)",
-    description: "Analyzes Windows executable files",
+    value: 'exe',
+    label: 'Windows Executable (exe)',
+    description: 'Analyzes Windows executable files',
   },
   {
-    value: "dll",
-    label: "Windows DLL (dll)",
-    description: "Analyzes Windows DLL files",
+    value: 'dll',
+    label: 'Windows DLL (dll)',
+    description: 'Analyzes Windows DLL files',
   },
   {
-    value: "pdf",
-    label: "PDF Document (pdf)",
-    description: "Analyzes PDF documents for malicious content",
+    value: 'pdf',
+    label: 'PDF Document (pdf)',
+    description: 'Analyzes PDF documents for malicious content',
   },
   {
-    value: "doc",
-    label: "Office Document (doc)",
-    description: "Analyzes Microsoft Office documents",
+    value: 'doc',
+    label: 'Office Document (doc)',
+    description: 'Analyzes Microsoft Office documents',
   },
   {
-    value: "zip",
-    label: "Archive (zip)",
-    description: "Extracts and analyzes archive contents",
+    value: 'zip',
+    label: 'Archive (zip)',
+    description: 'Extracts and analyzes archive contents',
   },
   {
-    value: "js",
-    label: "JavaScript (js)",
-    description: "Analyzes JavaScript files",
+    value: 'js',
+    label: 'JavaScript (js)',
+    description: 'Analyzes JavaScript files',
   },
   {
-    value: "url",
-    label: "URL Analysis (url)",
-    description: "Analyzes URLs and captures network traffic",
+    value: 'url',
+    label: 'URL Analysis (url)',
+    description: 'Analyzes URLs and captures network traffic',
   },
 ];
 
 const machines = [
-  { value: "win10", label: "Windows 10 x64 #1" },
+  { value: 'win10', label: 'Windows 10 x64 #1' },
   // { value: "win10x64-2", label: "Windows 10 x64 #2" },
   // { value: "win7x86-1", label: "Windows 7 x86 #1" },
   // { value: "ubuntu2004-1", label: "Ubuntu 20.04 #1" },
@@ -88,16 +77,16 @@ export default function NewTaskPage() {
   const preScriptRef = useRef<HTMLInputElement>(null);
   const duringScriptRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState("file");
+  const [activeTab, setActiveTab] = useState('file');
   const [isDragging, setIsDragging] = useState(false);
 
   // Form state
   const [file, setFile] = useState<File | null>(null);
-  const [url, setUrl] = useState("");
-  const [analysisPackage, setAnalysisPackage] = useState("");
-  const [machine, setMachine] = useState("");
-  const [options, setOptions] = useState("");
-  const [priority, setPriority] = useState("medium");
+  const [url, setUrl] = useState('');
+  const [analysisPackage, setAnalysisPackage] = useState('');
+  const [machine, setMachine] = useState('');
+  const [options, setOptions] = useState('');
+  const [priority, setPriority] = useState('medium');
   const [preScript, setPreScript] = useState<File | null>(null);
   const [duringScript, setDuringScript] = useState<File | null>(null);
   const { mutate, isSuccess, isPending } = useCreateFile();
@@ -110,11 +99,9 @@ export default function NewTaskPage() {
     setFile(uploadedFile);
 
     // Auto-select analysis package based on file extension
-    const extension = uploadedFile.name.split(".").pop()?.toLowerCase();
+    const extension = uploadedFile.name.split('.').pop()?.toLowerCase();
     if (extension) {
-      const matchingPackage = analysisPackages.find(
-        (pkg) => pkg.value === extension
-      );
+      const matchingPackage = analysisPackages.find(pkg => pkg.value === extension);
       if (matchingPackage) {
         setAnalysisPackage(matchingPackage.value);
       }
@@ -190,35 +177,31 @@ export default function NewTaskPage() {
   };
   useEffect(() => {
     if (isSuccess) {
-      router.push("/tasks/active");
+      router.push('/tasks/active');
     }
   }, [isSuccess, router]);
   return (
     <DashboardLayout>
       <Card>
         <CardHeader>
-          <CardTitle>{t("tasks.create")}</CardTitle>
+          <CardTitle>{t('tasks.create')}</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
-            <Tabs
-              defaultValue="file"
-              value={activeTab}
-              onValueChange={setActiveTab}
-            >
+            <Tabs defaultValue="file" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="file">{t("tasks.fileUpload")}</TabsTrigger>
-                <TabsTrigger value="url">{t("tasks.urlInput")}</TabsTrigger>
+                <TabsTrigger value="file">{t('tasks.fileUpload')}</TabsTrigger>
+                <TabsTrigger value="url">{t('tasks.urlInput')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="file" className="space-y-6 pt-4">
                 <div className="grid gap-3">
-                  <Label>{t("tasks.uploadFile")}</Label>
+                  <Label>{t('tasks.uploadFile')}</Label>
                   <div
                     className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
                       isDragging
-                        ? "border-primary bg-primary/5"
-                        : "border-muted-foreground/25 hover:border-primary/50"
+                        ? 'border-primary bg-primary/5'
+                        : 'border-muted-foreground/25 hover:border-primary/50'
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -227,7 +210,6 @@ export default function NewTaskPage() {
                   >
                     <input
                       type="file"
-                      accept=".zip, .msi"
                       ref={fileInputRef}
                       className="hidden"
                       onChange={handleFileInputChange}
@@ -244,7 +226,7 @@ export default function NewTaskPage() {
                           variant="ghost"
                           size="sm"
                           className="mt-2"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             setFile(null);
                           }}
@@ -255,11 +237,9 @@ export default function NewTaskPage() {
                     ) : (
                       <>
                         <FileUp className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm font-medium mb-1">
-                          {t("tasks.dragDropFile")}
-                        </p>
+                        <p className="text-sm font-medium mb-1">{t('tasks.dragDropFile')}</p>
                         <p className="text-xs text-muted-foreground">
-                          {t("tasks.supportsFileTypes")}
+                          {t('tasks.supportsFileTypes')}
                         </p>
                       </>
                     )}
@@ -269,17 +249,15 @@ export default function NewTaskPage() {
 
               <TabsContent value="url" className="space-y-6 pt-4">
                 <div className="grid gap-3">
-                  <Label htmlFor="url-input">{t("tasks.suspiciousUrl")}</Label>
+                  <Label htmlFor="url-input">{t('tasks.suspiciousUrl')}</Label>
                   <Input
                     id="url-input"
                     placeholder="https://example.com/suspicious-page"
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    required={activeTab === "url"}
+                    onChange={e => setUrl(e.target.value)}
+                    required={activeTab === 'url'}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {t("tasks.urlDescription")}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t('tasks.urlDescription')}</p>
                 </div>
               </TabsContent>
             </Tabs>
@@ -287,9 +265,7 @@ export default function NewTaskPage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="grid gap-3">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="analysis-package">
-                    {t("tasks.analysisPackage")}
-                  </Label>
+                  <Label htmlFor="analysis-package">{t('tasks.analysisPackage')}</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -297,16 +273,13 @@ export default function NewTaskPage() {
                       </TooltipTrigger>
                       <TooltipContent className="max-w-sm">
                         <p>
-                          Select the appropriate analysis package based on the
-                          file type you're analyzing.
+                          Select the appropriate analysis package based on the file type you're
+                          analyzing.
                         </p>
                         <ul className="list-disc pl-4 mt-2 space-y-1">
-                          {analysisPackages.map((pkg) => (
+                          {analysisPackages.map(pkg => (
                             <li key={pkg.value} className="text-xs">
-                              <span className="font-semibold">
-                                {pkg.label}:
-                              </span>{" "}
-                              {pkg.description}
+                              <span className="font-semibold">{pkg.label}:</span> {pkg.description}
                             </li>
                           ))}
                         </ul>
@@ -314,16 +287,12 @@ export default function NewTaskPage() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Select
-                  value={analysisPackage}
-                  onValueChange={setAnalysisPackage}
-                  required
-                >
+                <Select value={analysisPackage} onValueChange={setAnalysisPackage} required>
                   <SelectTrigger id="analysis-package">
                     <SelectValue placeholder="Select analysis package" />
                   </SelectTrigger>
                   <SelectContent>
-                    {analysisPackages.map((pkg) => (
+                    {analysisPackages.map(pkg => (
                       <SelectItem key={pkg.value} value={pkg.value}>
                         {pkg.label}
                       </SelectItem>
@@ -333,13 +302,13 @@ export default function NewTaskPage() {
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="machine">{t("tasks.machine")}</Label>
+                <Label htmlFor="machine">{t('tasks.machine')}</Label>
                 <Select value={machine} onValueChange={setMachine} required>
                   <SelectTrigger id="machine">
                     <SelectValue placeholder="Select machine" />
                   </SelectTrigger>
                   <SelectContent>
-                    {machines.map((m) => (
+                    {machines.map(m => (
                       <SelectItem key={m.value} value={m.value}>
                         {m.label}
                       </SelectItem>
@@ -350,41 +319,35 @@ export default function NewTaskPage() {
             </div>
 
             <div className="grid gap-3">
-              <Label htmlFor="options">{t("tasks.options")}</Label>
+              <Label htmlFor="options">{t('tasks.options')}</Label>
               <Input
                 id="options"
                 placeholder="timeout=120,enforce_timeout=1,process_memory=1"
                 value={options}
-                onChange={(e) => setOptions(e.target.value)}
+                onChange={e => setOptions(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">
-                {t("tasks.optionsDescription")}
-              </p>
+              <p className="text-xs text-muted-foreground">{t('tasks.optionsDescription')}</p>
             </div>
 
             <div className="grid gap-3">
-              <Label>{t("tasks.priority")}</Label>
-              <RadioGroup
-                value={priority}
-                onValueChange={setPriority}
-                className="flex space-x-4"
-              >
+              <Label>{t('tasks.priority')}</Label>
+              <RadioGroup value={priority} onValueChange={setPriority} className="flex space-x-4">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="low" id="priority-low" />
                   <Label htmlFor="priority-low" className="cursor-pointer">
-                    {t("tasks.low")}
+                    {t('tasks.low')}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="medium" id="priority-medium" />
                   <Label htmlFor="priority-medium" className="cursor-pointer">
-                    {t("tasks.medium")}
+                    {t('tasks.medium')}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="high" id="priority-high" />
                   <Label htmlFor="priority-high" className="cursor-pointer">
-                    {t("tasks.high")}
+                    {t('tasks.high')}
                   </Label>
                 </div>
               </RadioGroup>
@@ -392,7 +355,7 @@ export default function NewTaskPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="grid gap-3">
-                <Label>{t("tasks.duringExecutionScript")}</Label>
+                <Label>{t('tasks.duringExecutionScript')}</Label>
                 <div className="flex items-center gap-2">
                   <input
                     type="file"
@@ -408,7 +371,7 @@ export default function NewTaskPage() {
                     onClick={triggerPreScriptInput}
                   >
                     <FileUp className="mr-2 h-4 w-4" />
-                    {preScript ? preScript.name : "Choose .py file"}
+                    {preScript ? preScript.name : 'Choose .py file'}
                   </Button>
                   {preScript && (
                     <Button
@@ -421,13 +384,11 @@ export default function NewTaskPage() {
                     </Button>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t("tasks.preScriptDescription")}
-                </p>
+                <p className="text-xs text-muted-foreground">{t('tasks.preScriptDescription')}</p>
               </div>
 
               <div className="grid gap-3">
-                <Label>{t("tasks.duringExecutionScript")}</Label>
+                <Label>{t('tasks.duringExecutionScript')}</Label>
 
                 <div className="flex items-center gap-2">
                   <input
@@ -444,7 +405,7 @@ export default function NewTaskPage() {
                     onClick={triggerDuringScriptInput}
                   >
                     <FileUp className="mr-2 h-4 w-4" />
-                    {duringScript ? duringScript.name : "Choose .py file"}
+                    {duringScript ? duringScript.name : 'Choose .py file'}
                   </Button>
                   {duringScript && (
                     <Button
@@ -458,7 +419,7 @@ export default function NewTaskPage() {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {t("tasks.duringScriptDescription")}
+                  {t('tasks.duringScriptDescription')}
                 </p>
               </div>
             </div>
@@ -466,11 +427,11 @@ export default function NewTaskPage() {
           <CardFooter className="flex justify-between">
             <Button type="button" variant="outline" onClick={handleCancel}>
               <X className="mr-2 h-4 w-4" />
-              {t("tasks.cancelTask")}
+              {t('tasks.cancelTask')}
             </Button>
             <Button type="submit">
               <Send className="mr-2 h-4 w-4" />
-              {isPending ? "Loading..." : t("tasks.submitTask")}
+              {isPending ? 'Loading...' : t('tasks.submitTask')}
             </Button>
           </CardFooter>
         </form>
