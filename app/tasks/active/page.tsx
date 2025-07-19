@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { VideoPlayer } from '@/components/videoplayer';
 import { useState } from 'react';
 
 import { DataTablePagination } from '@/components/data-table-pagination';
@@ -25,7 +26,7 @@ import {
 } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/language-context';
 import { useQueryApi } from '@/share/hook/useQuery';
-import { Filter, Plus, Search, X } from 'lucide-react';
+import { Eye, EyeOff, Filter, Plus, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -33,10 +34,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 const statuses = ['All', 'Running', 'Pending', 'Analyzing'];
 const taskTypes = ['All', 'File', 'URL'];
 const incidentTypes = ['All', 'Unknown', 'Malware', 'Ransomware', 'Phishing'];
-
 export default function ActiveTasksPage() {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
+  const [showVideo, setShowVideo] = useState(false);
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
   const [incidentFilter, setIncidentFilter] = useState('All');
@@ -58,7 +59,10 @@ export default function ActiveTasksPage() {
   const handleCloseIframe = () => {
     setSelectViewId(null);
   };
-
+  const streamUrl = 'https://sb-back.securesector.uz/live/streamkey/index.m3u8';
+  const toggleVideo = () => {
+    setShowVideo(prev => !prev);
+  };
   const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
     const currentPage = parseInt(params.get('page') || '1');
@@ -279,7 +283,7 @@ export default function ActiveTasksPage() {
                 <TableHead>{t('tasks.fileTime')}</TableHead>
                 <TableHead>{t('tasks.createdTime')}</TableHead>
                 <TableHead>{t('tasks.fileSize')}</TableHead>
-                <TableHead>{t('tasks.incidentType')}</TableHead>
+                <TableHead>{t('common.view')}</TableHead>
                 <TableHead>{t('tasks.status')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -298,7 +302,16 @@ export default function ActiveTasksPage() {
                     <TableCell>{!task.startedAt ? 0 : task.startedAt}</TableCell>
                     <TableCell>{task.completedAt ? task.completedAt : 0}</TableCell>
                     <TableCell>{task.fileSizeMB}</TableCell>
-                    <TableCell>{!task.incidentType ? '' : task.incidentType}</TableCell>
+                    <TableCell>
+                      {task.status === 'running' ? (
+                        <Button onClick={toggleVideo} variant="ghost" size="icon">
+                          {showVideo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          <span className="sr-only">{t('tasks.viewDetails')}</span>
+                        </Button>
+                      ) : (
+                        ''
+                      )}
+                    </TableCell>
 
                     <TableCell>
                       <Badge className={getStatusColor(task.status)}>
@@ -316,7 +329,11 @@ export default function ActiveTasksPage() {
               )}
             </TableBody>
           </Table>
-
+          {showVideo && (
+            <div className="mt-4">
+              <VideoPlayer streamUrl={streamUrl} />
+            </div>
+          )}
           <DataTablePagination
             currentPage={validCurrentPage}
             totalPages={totalPages}
