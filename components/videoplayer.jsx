@@ -25,7 +25,6 @@ export const VideoPlayer = ({ streamUrl }) => {
   return (
     <video
       ref={videoRef}
-      controls
       autoPlay
       style={{
         width: '100%',
