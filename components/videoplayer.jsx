@@ -2,6 +2,8 @@ import Hls from 'hls.js';
 import { useEffect, useRef } from 'react';
 
 export const VideoPlayer = ({ streamUrl }) => {
+  console.log(streamUrl);
+
   const videoRef = useRef();
 
   useEffect(() => {

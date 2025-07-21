@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { VideoPlayer } from '@/components/videoplayer';
 import { useState } from 'react';
 
 import { DataTablePagination } from '@/components/data-table-pagination';
@@ -24,12 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { VideoPlayer } from '@/components/videoplayer';
 import { useLanguage } from '@/contexts/language-context';
 import { useQueryApi } from '@/share/hook/useQuery';
+import { getToken } from '@/share/utils/auth';
+import axios from 'axios';
 import { Eye, EyeOff, Filter, Plus, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-
 // Available statuses, types, and incident types for filtering
 const statuses = ['All', 'Running', 'Pending', 'Analyzing'];
 const taskTypes = ['All', 'File', 'URL'];
@@ -49,8 +50,8 @@ export default function ActiveTasksPage() {
   const page = parseInt(searchParams.get('page') || '1');
   const router = useRouter();
   const [selectViewId, setSelectViewId] = useState(null);
-
-  // Fetch data using useQueryApi
+  const [StreamKey, setStreamKey] = useState<any>('');
+  const token = getToken();
   const { data, isLoading } = useQueryApi({
     url: `/1/cape/tasks/list/active?page=${page}&limit=20&status=${statusFilter.toLowerCase()}&category=${typeFilter.toLowerCase()}&incidentType=${incidentFilter.toLowerCase()}`,
     pathname: 'tasks',
@@ -59,10 +60,28 @@ export default function ActiveTasksPage() {
   const handleCloseIframe = () => {
     setSelectViewId(null);
   };
-  const streamUrl = 'https://sb-back.securesector.uz/live/streamkey/index.m3u8';
-  const toggleVideo = () => {
+  const toggleVideo = async ({ taskID }: { taskID: string }) => {
     setShowVideo(prev => !prev);
+    try {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_STREAM_URL}/stream/start/${taskID}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const key = res.data?.streamKey || res.data?.key || res.data;
+      setStreamKey(key);
+    } catch (err) {
+      console.log('Xatolik:', err);
+    }
   };
+
+  const streamUrl = `${process.env.NEXT_PUBLIC_BACK_URL}/${StreamKey}`;
+
+  // const { data: Stream } = useQueryApi({
+  //   url: `/1/stream/start/${taskId}`,
+  //   pathname: 'StreamVideoInformation',
+  // });
+
   const handleNextPage = () => {
     const params = new URLSearchParams(searchParams);
     const currentPage = parseInt(params.get('page') || '1');
@@ -304,7 +323,11 @@ export default function ActiveTasksPage() {
                     <TableCell>{task.fileSizeMB}</TableCell>
                     <TableCell>
                       {task.status === 'running' ? (
-                        <Button onClick={toggleVideo} variant="ghost" size="icon">
+                        <Button
+                          onClick={() => toggleVideo({ taskID: task.id })}
+                          variant="ghost"
+                          size="icon"
+                        >
                           {showVideo ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           <span className="sr-only">{t('tasks.viewDetails')}</span>
                         </Button>
