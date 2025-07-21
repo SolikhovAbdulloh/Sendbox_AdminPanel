@@ -63,7 +63,7 @@ export default function ActiveTasksPage() {
   const toggleVideo = async ({ taskID }: { taskID: string }) => {
     setShowVideo(prev => !prev);
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_STREAM_URL}/stream/start/${taskID}`, {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_BACK_URL}/stream/start/${taskID}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
