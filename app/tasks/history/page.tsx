@@ -94,7 +94,7 @@ export default function TaskHistoryPage() {
   const filteredTasks = tasks.filter((task: any) => {
     const matchesSearch =
       task.filename?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.sha256?.toLowerCase().includes(searchTerm.toLowerCase());
+      task.md5?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
   const totalItems = filteredTasks.length;
@@ -334,8 +334,8 @@ export default function TaskHistoryPage() {
                 <TableHead>No</TableHead>
                 <TableHead>{t('tasks.fileName')}</TableHead>
                 <TableHead>{t('tasks.type')}</TableHead>
-                <TableHead>{t('tasks.sha256')}</TableHead>
-                <TableHead>{t('tasks.fileTime')}</TableHead>
+                <TableHead>{t('tasks.md5')}</TableHead>
+                {/* <TableHead>{t('tasks.fileTime')}</TableHead> */}
                 <TableHead>{t('tasks.createdTime')}</TableHead>
                 <TableHead>{t('tasks.fileSize')}</TableHead>
                 <TableHead>{t('tasks.incidentType')}</TableHead>
@@ -353,9 +353,9 @@ export default function TaskHistoryPage() {
                       <Badge variant="outline">{task.category}</Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs truncate max-w-[150px]">
-                      {task.sha256}
+                      {task.md5}
                     </TableCell>
-                    <TableCell>{format(task.startedAt, 'MM/dd/yyyy')}</TableCell>
+                    {/* <TableCell>{format(task.startedAt, 'MM/dd/yyyy')}</TableCell> */}
                     <TableCell>{format(task.completedAt, 'MM/dd/yyyy')}</TableCell>
                     <TableCell>{task.fileSizeMB}</TableCell>
                     <TableCell>

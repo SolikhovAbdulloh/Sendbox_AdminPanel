@@ -72,6 +72,7 @@
     "fileName": "File Name",
     "type": "Type",
     "sha256": "SHA256",
+    "md5": "MD5",
     "fileTime": "File Time",
     "createdTime": "Created Time",
     "fileSize": "File Size",

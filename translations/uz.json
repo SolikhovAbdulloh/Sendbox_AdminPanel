@@ -73,6 +73,7 @@
     "fileName": "Fayl nomi",
     "type": "Turi",
     "sha256": "SHA256",
+    "md5": "MD5",
     "fileTime": "Fayl vaqti",
     "createdTime": "Yaratilgan vaqt",
     "fileSize": "Fayl hajmi",
