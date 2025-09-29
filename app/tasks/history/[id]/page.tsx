@@ -51,7 +51,7 @@ export default function TaskDetailsPage({ params }: { params: Promise<{ id: stri
     isLoading,
     isFetching,
   } = useQueryApi({
-    url: `1/cape/tasks/get/report/${taskId}`,
+    url: `1/cape/tasks/get/report/${taskId}?category=${'file'}`,
     pathname: 'taskInformation',
   });
 

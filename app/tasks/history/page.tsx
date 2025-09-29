@@ -355,8 +355,8 @@ export default function TaskHistoryPage() {
                     <TableCell className="font-mono text-xs truncate max-w-[150px]">
                       {task.md5}
                     </TableCell>
-                    {/* <TableCell>{format(task.startedAt, 'MM/dd/yyyy')}</TableCell> */}
-                    <TableCell>{format(task.completedAt, 'MM/dd/yyyy')}</TableCell>
+                    <TableCell>{format(task.startedAt, 'MM/dd/yyyy HH:mm')}</TableCell>
+                    {/* <TableCell>{format(task.completedAt, 'MM/dd/yyyy')}</TableCell> */}
                     <TableCell>{task.fileSizeMB}</TableCell>
                     <TableCell>
                       {task.incidentType === null ? (
@@ -375,7 +375,17 @@ export default function TaskHistoryPage() {
                     <TableCell className="text-right">
                       {task.status !== 'failed_analysis' && (
                         <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/tasks/history/${task.id}`}>
+                          <Link
+                            href={
+                              task.category?.toLowerCase() === 'apk'
+                                ? `/tasks/history/byhash/${
+                                    task.md5
+                                  }`
+                                : `/tasks/history/${task.id}?category=${
+                                    task.category?.toLowerCase() || 'file'
+                                  }`
+                            }
+                          >
                             <Eye className="h-4 w-4" />
                             <span className="sr-only">{t('tasks.viewDetails')}</span>
                           </Link>
